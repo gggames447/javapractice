@@ -9,6 +9,7 @@ import practicalpractice3.utils.exception.InputException;
 import practicalpractice3.utils.input.InputUtil;
 import practicalpractice3.utils.menu.MenuUtil;
 
+import java.awt.*;
 import java.util.Scanner;
 
 // 商品管理子菜单，只负责读输入，具体操作交给 GoodsHandler
@@ -29,7 +30,8 @@ public class GoodsUI {
                     case 5 -> goodsHandler.queryByName(InputUtil.getString(scanner, "请输入商品名称："));
                     case 6 -> goodsHandler.deleteGoods(InputUtil.getString(scanner, "请输入商品名称："));
                     case 7 -> {
-                              sortByPrice(scanner,goodsHandler);
+                        MenuUtil.printSortMenu();
+                        sortByPrice(scanner,goodsHandler);
                     }
                     case 8 ->  goodsHandler.queryByKeyword(InputUtil.getString(scanner,"请输入模糊关键词"));
                     case 9 -> goodsHandler.showStatistics();
