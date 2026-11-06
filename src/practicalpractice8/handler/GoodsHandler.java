@@ -63,7 +63,13 @@ public class GoodsHandler extends BaseHandler<Goods> {
      * @param name 商品名称
      */
     public void findGoods(String name) {
-        printMatching(goods -> goods.getGoodsName().equals(name), "找不到该商品。");
+        Goods goods = findByName(name);
+        if (goods == null) {
+            System.out.println("找不到该商品。");
+            return;
+        }
+        printHeader();
+        printItem(goods);
     }
 
     /**
@@ -73,8 +79,17 @@ public class GoodsHandler extends BaseHandler<Goods> {
      * @param maxPrice 最高价格
      */
     public void findGoods(double minPrice, double maxPrice) {
-        printMatching(goods -> goods.getPrice() >= minPrice && goods.getPrice() <= maxPrice,
-                "在该价格区间内未找到商品。");
+        int found = 0;
+        for (int i = 0; i < count; i++) {
+            double price = array[i].getPrice();
+            if (price >= minPrice && price <= maxPrice) {
+                printFound(array[i], found);
+                found++;
+            }
+        }
+        if (found == 0) {
+            System.out.println("在该价格区间内未找到商品。");
+        }
     }
 
     /**
@@ -83,7 +98,16 @@ public class GoodsHandler extends BaseHandler<Goods> {
      * @param keyword 关键字
      */
     public void queryByKeyword(String keyword) {
-        printMatching(goods -> goods.getGoodsName().contains(keyword), "未找到商品。");
+        int found = 0;
+        for (int i = 0; i < count; i++) {
+            if (array[i].getGoodsName().contains(keyword)) {
+                printFound(array[i], found);
+                found++;
+            }
+        }
+        if (found == 0) {
+            System.out.println("未找到商品。");
+        }
     }
 
     /**

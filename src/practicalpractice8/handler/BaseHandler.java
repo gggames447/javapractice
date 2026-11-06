@@ -4,8 +4,6 @@ import practicalpractice8.entity.BaseEntity;
 import practicalpractice8.interfaces.DataOperate;
 import practicalpractice8.utils.exception.BusinessException;
 
-import java.util.function.Predicate;
-
 /**
  * 所有 Handler 的公共部分：用数组存数据，提供新增、查看、查找、按 ID 删除。
  * 子类只需要实现表头和每一行的打印；需要额外的新增规则时重写 validateBeforeAdd。
@@ -53,7 +51,14 @@ public abstract class BaseHandler<T extends BaseEntity> implements DataOperate<T
      */
     @Override
     public void queryAll() {
-        printMatching(item -> true, "暂无数据。");
+        if (count == 0) {
+            System.out.println("暂无数据。");
+            return;
+        }
+        printHeader();
+        for (int i = 0; i < count; i++) {
+            printItem(array[i]);
+        }
     }
 
     /**
@@ -111,25 +116,17 @@ public abstract class BaseHandler<T extends BaseEntity> implements DataOperate<T
     }
 
     /**
-     * 打印所有满足条件的数据；一条都没有时只打印提示，不打印表头
+     * 查询时打印一条找到的数据。找到的是第一条时先打印表头，
+     * 这样一条都没找到时就不会出现一个空表头。
      *
-     * @param condition 筛选条件，例如 goods -> goods.getPrice() > 100
-     * @param emptyMessage 一条都没有时的提示
+     * @param item 找到的数据
+     * @param foundBefore 在它之前已经找到了几条
      */
-    protected void printMatching(Predicate<T> condition, String emptyMessage) {
-        boolean hasHeader = false;
-        for (int i = 0; i < count; i++) {
-            if (condition.test(array[i])) {
-                if (!hasHeader) {
-                    printHeader();
-                    hasHeader = true;
-                }
-                printItem(array[i]);
-            }
+    protected void printFound(T item, int foundBefore) {
+        if (foundBefore == 0) {
+            printHeader();
         }
-        if (!hasHeader) {
-            System.out.println(emptyMessage);
-        }
+        printItem(item);
     }
 
     /**

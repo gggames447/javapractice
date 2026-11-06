@@ -122,7 +122,16 @@ public class OrderHandler extends BaseHandler<Order> {
      * @param userId 用户 ID
      */
     public void queryByUser(String userId) {
-        printMatching(order -> order.getUserId().equals(userId), "该用户暂无订单。");
+        int found = 0;
+        for (int i = 0; i < count; i++) {
+            if (array[i].getUserId().equals(userId)) {
+                printFound(array[i], found);
+                found++;
+            }
+        }
+        if (found == 0) {
+            System.out.println("该用户暂无订单。");
+        }
     }
 
     /**
