@@ -83,15 +83,4 @@ public class UserAddressInfo {
         }
         this.addressInfo = addressInfo;
     }
-
-    @Override
-    public String toString() {
-        return "UserAddressInfo{" +
-                "addressId='" + addressId + '\'' +
-                ", userId='" + userId + '\'' +
-                ", receiver='" + receiver + '\'' +
-                ", telephone='" + telephone + '\'' +
-                ", addressInfo='" + addressInfo + '\'' +
-                '}';
-    }
 }

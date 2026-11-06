@@ -6,14 +6,11 @@ import practicalpractice5.utils.exception.InputException;
  * 商品
  */
 public class Goods {
-    private String goodId;
-    private String goodName;
+    private final String goodId;
+    private final String goodName;
     private double goodPrice;
     private int goodStock;
-    private String cateId;
-
-    public Goods() {
-    }
+    private final String cateId;
 
     /**
      * 创建一个商品，单价和库存会经过 setter 校验
@@ -37,16 +34,8 @@ public class Goods {
         return goodId;
     }
 
-    public void setGoodId(String goodId) {
-        this.goodId = goodId;
-    }
-
     public String getGoodName() {
         return goodName;
-    }
-
-    public void setGoodName(String goodName) {
-        this.goodName = goodName;
     }
 
     public double getGoodPrice() {
@@ -85,20 +74,5 @@ public class Goods {
 
     public String getCateId() {
         return cateId;
-    }
-
-    public void setCateId(String cateId) {
-        this.cateId = cateId;
-    }
-
-    @Override
-    public String toString() {
-        return "Goods{" +
-                "cateId='" + cateId + '\'' +
-                ", goodId='" + goodId + '\'' +
-                ", goodName='" + goodName + '\'' +
-                ", goodPrice='" + goodPrice + '\'' +
-                ", goodStock='" + goodStock + '\'' +
-                '}';
     }
 }

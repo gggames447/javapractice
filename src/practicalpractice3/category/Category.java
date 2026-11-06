@@ -1,26 +1,26 @@
 package practicalpractice3.category;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 // 商品分类
 public class Category {
-    private String cateId;
-    private String cateName;
-    private String cateDesc;
+    private final String cateId;
+    private final String cateName;
+    private final String cateDesc;
 
-    @Override
-    public String toString() {
-        return "Category{" +
-                "cateDesc='" + cateDesc + '\'' +
-                ", cateId='" + cateId + '\'' +
-                ", cateName='" + cateName + '\'' +
-                '}';
+    public Category(String cateId, String cateName, String cateDesc) {
+        this.cateId = cateId;
+        this.cateName = cateName;
+        this.cateDesc = cateDesc;
+    }
+
+    public String getCateId() {
+        return cateId;
+    }
+
+    public String getCateName() {
+        return cateName;
+    }
+
+    public String getCateDesc() {
+        return cateDesc;
     }
 }

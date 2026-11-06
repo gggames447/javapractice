@@ -1,22 +1,19 @@
 package practicalpractice3.utils.menu;
 
-// 各级菜单的文字
+// 各级菜单的文字，以及表格统一使用的分隔线
 public class MenuUtil {
-    public static void printCategoryMenu() {
-        String menu = """
-                =======商品分类管理系统=======
-                【1】新增分类
-                【2】查看所有分类
-                【0】返回上级
-                ===========================
-                """;
-        System.out.print(menu);
+    private static final String LINE = "-".repeat(60);
+
+    // 工具类，只提供静态方法，不需要创建对象
+    private MenuUtil() {}
+
+    public static void printLine() {
+        System.out.println(LINE);
     }
 
-    public static void printMainMenu(){
-
-        String mainMenu = """
-                =======电商订单管理系统=======
+    public static void printMainMenu() {
+        System.out.print("""
+                ========== 电商订单管理系统 ==========
                 【1】用户管理
                 【2】商品分类管理
                 【3】商品管理
@@ -24,36 +21,44 @@ public class MenuUtil {
                 【5】订单下单
                 【6】订单查询与状态修改
                 【0】退出系统
-                ============================
-                请输入功能编号：""";
+                ======================================
+                请输入功能编号：""");
+    }
 
-        System.out.print(mainMenu);
+    public static void printCategoryMenu() {
+        System.out.print("""
+                ============ 商品分类管理 ============
+                【1】新增分类
+                【2】查看所有分类
+                【0】返回上级
+                ======================================
+                请输入功能编号：""");
     }
+
     public static void printGoodsMenu() {
-        String goodsMenu = """
-        =======商品管理系统=======
-        【1】新增商品
-        【2】查看全部商品
-        【3】按价格区间查询
-        【4】库存预警查询
-        【5】按名称查找商品
-        【6】删除商品
-        【7】按价格排序
-        【8】模糊查询商品
-        【9】库存与价格统计
-        【0】返回上级
-        ===========================
-        请输入功能编号：""";
-        System.out.print(goodsMenu);
+        System.out.print("""
+                ============== 商品管理 ==============
+                【1】新增商品
+                【2】查看全部商品
+                【3】按价格区间查询
+                【4】库存预警查询
+                【5】按名称查找商品
+                【6】删除商品
+                【7】按价格排序
+                【8】模糊查询商品
+                【9】库存与价格统计
+                【0】返回上级
+                ======================================
+                请输入功能编号：""");
     }
+
     public static void printSortMenu() {
-        String sortMenu = """
-        =======价格排序=======
-        【1】价格升序
-        【2】价格降序
-        【0】返回
-        =====================
-        请选择排序方式：""";
-        System.out.print(sortMenu);
+        System.out.print("""
+                ============== 价格排序 ==============
+                【1】价格升序
+                【2】价格降序
+                【0】取消
+                ======================================
+                请选择排序方式：""");
     }
 }

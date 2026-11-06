@@ -11,8 +11,10 @@ import practicalpractice2.utils.menu.MenuUtil;
 
 import java.util.Scanner;
 
+// 商品管理子菜单，只负责读输入，具体操作交给 GoodsHandler
 public class GoodsUI {
 
+    // 显示商品管理菜单，循环处理用户的选择，输入 0 返回上级
     public static void showMenu(Scanner scanner, GoodsHandler goodsHandler, CategoryHandler categoryHandler) {
         while (true) {
             MenuUtil.printGoodsMenu();
@@ -36,6 +38,7 @@ public class GoodsUI {
         }
     }
 
+    // 读取输入并新增商品，分类不存在时取消新增
     private static void addGoods(Scanner scanner, GoodsHandler goodsHandler, CategoryHandler categoryHandler) {
         System.out.println("--- 新增商品 ---");
         String id = InputUtil.getString(scanner, "请输入商品编号：");
@@ -44,14 +47,15 @@ public class GoodsUI {
         int stock = InputUtil.getInt(scanner, "请输入商品库存：");
         String cateId = InputUtil.getString(scanner, "请输入所属分类ID：");
 
+        // 分类必须先存在，商品才能归到它下面
         if (!categoryHandler.existsById(cateId)) {
             System.out.println("分类不存在，新增失败！");
             return;
         }
-
         goodsHandler.addGoods(new Goods(id, name, price, stock, cateId));
     }
 
+    // 读取价格区间并查询，下限不能大于上限
     private static void queryByPriceRange(Scanner scanner, GoodsHandler goodsHandler) {
         System.out.println("--- 按价格区间查询 ---");
         double min = InputUtil.getDouble(scanner, "请输入最低价格：");
@@ -59,8 +63,8 @@ public class GoodsUI {
 
         if (min > max) {
             System.out.println("最低价格不能大于最高价格！");
-        } else {
-            goodsHandler.queryByPriceRange(min, max);
+            return;
         }
+        goodsHandler.queryByPriceRange(min, max);
     }
 }

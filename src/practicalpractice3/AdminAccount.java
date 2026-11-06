@@ -2,8 +2,8 @@ package practicalpractice3;
 
 // 管理员账号，目前账号直接写在 LoginService 里
 public class AdminAccount {
-    private String name;
-    private String password;
+    private final String name;
+    private final String password;
 
     public AdminAccount(String name, String password) {
         this.name = name;
@@ -18,4 +18,3 @@ public class AdminAccount {
         return password;
     }
 }
-

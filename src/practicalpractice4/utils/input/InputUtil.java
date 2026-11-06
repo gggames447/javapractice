@@ -8,9 +8,9 @@ import java.util.Scanner;
  * 所有键盘输入都走这里。统一用 nextLine()，避免 nextInt() 把回车留在缓冲区
  */
 public class InputUtil {
+    // 工具类，只提供静态方法，不需要创建对象
     private InputUtil() {}
 
-   
     /**
      * 读一行并去掉首尾空格
      *
@@ -38,7 +38,7 @@ public class InputUtil {
         try {
             return Integer.parseInt(input);
         } catch (NumberFormatException e) {
-            throw new InputException("请输入数字");
+            throw new InputException("请输入整数");
         }
     }
 
@@ -56,22 +56,6 @@ public class InputUtil {
     }
 
     /**
-     * 读取一个小数
-     *
-     * @param scanner 键盘输入
-     * @return 读到的小数
-     * @throws InputException 输入为空或不是数字时
-     */
-    public static double getDouble(Scanner scanner) {
-        String input = readNotEmpty(scanner);
-        try {
-            return Double.parseDouble(input);
-        } catch (NumberFormatException e) {
-            throw new InputException("请输入数字");
-        }
-    }
-
-    /**
      * 先打印提示，再读取一个小数
      *
      * @param scanner 键盘输入
@@ -81,7 +65,12 @@ public class InputUtil {
      */
     public static double getDouble(Scanner scanner, String tip) {
         System.out.print(tip);
-        return getDouble(scanner);
+        String input = readNotEmpty(scanner);
+        try {
+            return Double.parseDouble(input);
+        } catch (NumberFormatException e) {
+            throw new InputException("请输入数字");
+        }
     }
 
     /**

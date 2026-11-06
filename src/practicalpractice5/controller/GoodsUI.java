@@ -37,12 +37,12 @@ public class GoodsUI extends BaseMenu {
         switch (choice) {
             case 1 -> addGoods();
             case 2 -> goodsHandler.queryAll();
-            case 3 -> queryByPriceRange();
+            case 3 -> findByPriceRange();
             case 4 -> goodsHandler.stockAlarm();
             case 5 -> goodsHandler.findGoods(InputUtil.getString(scanner, "请输入商品名称："));
             case 6 -> goodsHandler.deleteGoods(InputUtil.getString(scanner, "请输入商品名称："));
             case 7 -> sortByPrice();
-            case 8 -> goodsHandler.queryByKeyword(InputUtil.getString(scanner, "请输入模糊关键词："));
+            case 8 -> goodsHandler.queryByKeyword(InputUtil.getString(scanner, "请输入关键字："));
             case 9 -> goodsHandler.showStatistics();
             default -> System.out.println("无效编号！");
         }
@@ -64,23 +64,22 @@ public class GoodsUI extends BaseMenu {
             System.out.println("分类不存在，新增失败！");
             return;
         }
-
         goodsHandler.addGoods(new Goods(id, name, price, stock, cateId));
     }
 
     /**
      * 读取价格区间并查询，下限不能大于上限
      */
-    private void queryByPriceRange() {
+    private void findByPriceRange() {
         System.out.println("--- 按价格区间查询 ---");
         double min = InputUtil.getDouble(scanner, "请输入最低价格：");
         double max = InputUtil.getDouble(scanner, "请输入最高价格：");
 
         if (min > max) {
             System.out.println("最低价格不能大于最高价格！");
-        } else {
-            goodsHandler.findGoods(min, max);
+            return;
         }
+        goodsHandler.findGoods(min, max);
     }
 
     /**

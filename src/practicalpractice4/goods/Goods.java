@@ -1,32 +1,49 @@
 package practicalpractice4.goods;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-
 /**
  * 商品
  */
-@Getter
-@Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class Goods {
-    private String goodId;
-    private String goodName;
-    private double goodPrice;
-    private int goodStock;
-    private String cateId;
+    private final String goodId;
+    private final String goodName;
+    private final double goodPrice;
+    private final int goodStock;
+    private final String cateId;
 
-    @Override
-    public String toString() {
-        return "Goods{" +
-                "cateId='" + cateId + '\'' +
-                ", goodId='" + goodId + '\'' +
-                ", goodName='" + goodName + '\'' +
-                ", goodPrice='" + goodPrice + '\'' +
-                ", goodStock='" + goodStock + '\'' +
-                '}';
+    /**
+     * 创建一个商品，单价和库存是否合法由 GoodsHandler 在新增时检查
+     *
+     * @param goodId 商品编号
+     * @param goodName 商品名称
+     * @param goodPrice 单价
+     * @param goodStock 库存
+     * @param cateId 所属分类编号
+     */
+    public Goods(String goodId, String goodName, double goodPrice, int goodStock, String cateId) {
+        this.goodId = goodId;
+        this.goodName = goodName;
+        this.goodPrice = goodPrice;
+        this.goodStock = goodStock;
+        this.cateId = cateId;
+    }
+
+    public String getGoodId() {
+        return goodId;
+    }
+
+    public String getGoodName() {
+        return goodName;
+    }
+
+    public double getGoodPrice() {
+        return goodPrice;
+    }
+
+    public int getGoodStock() {
+        return goodStock;
+    }
+
+    public String getCateId() {
+        return cateId;
     }
 }

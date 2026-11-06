@@ -19,18 +19,12 @@ public class EshopManage {
      */
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-
-
         String currentUser = LoginService.login(scanner);
 
-
         if (currentUser != null) {
-
             // Handler 只在这里创建一次，进出子菜单时数据才不会丢
             CategoryHandler categoryHandler = new CategoryHandler();
             GoodsHandler goodsHandler = new GoodsHandler();
-
-
             MainMenuUI.showMenu(scanner, currentUser, categoryHandler, goodsHandler);
         }
     }

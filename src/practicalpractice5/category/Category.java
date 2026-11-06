@@ -6,12 +6,9 @@ import practicalpractice5.utils.exception.InputException;
  * 商品分类
  */
 public class Category {
-    private String cateId;
+    private final String cateId;
     private String cateName;
-    private String cateDesc;
-
-    public Category() {
-    }
+    private final String cateDesc;
 
     /**
      * 创建一个分类，分类名称会经过 setter 校验
@@ -29,10 +26,6 @@ public class Category {
 
     public String getCateId() {
         return cateId;
-    }
-
-    public void setCateId(String cateId) {
-        this.cateId = cateId;
     }
 
     public String getCateName() {
@@ -54,18 +47,5 @@ public class Category {
 
     public String getCateDesc() {
         return cateDesc;
-    }
-
-    public void setCateDesc(String cateDesc) {
-        this.cateDesc = cateDesc;
-    }
-
-    @Override
-    public String toString() {
-        return "Category{" +
-                "cateDesc='" + cateDesc + '\'' +
-                ", cateId='" + cateId + '\'' +
-                ", cateName='" + cateName + '\'' +
-                '}';
     }
 }

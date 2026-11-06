@@ -1,8 +1,8 @@
 package practicalpractice5;
 
+import practicalpractice5.controller.MainMenuUI;
 import practicalpractice5.handler.AddressHandler;
 import practicalpractice5.handler.CategoryHandler;
-import practicalpractice5.controller.MainMenuUI;
 import practicalpractice5.handler.GoodsHandler;
 import practicalpractice5.handler.UserHandler;
 import practicalpractice5.services.LoginService;

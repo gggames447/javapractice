@@ -1,32 +1,17 @@
 package practicalpractice5.handler;
 
 import practicalpractice5.account.UserAccount;
+import practicalpractice5.utils.menu.MenuUtil;
 
 /**
  * 管理普通用户，用数组存储，最多 20 个
  */
 public class UserHandler {
+    private static final int MAX_SIZE = 20;
+
+    // 有效用户的个数，只有下标 0 ~ count-1 有数据，后面都是 null
     private int count = 0;
-    private static final  int MAX_SIZE = 20;
-    private UserAccount[] userAccounts = new UserAccount[MAX_SIZE];
-
-    /**
-     * 打印用户表格的表头
-     */
-    private void printHeader() {
-        System.out.println("------------------------------------------------------------------------");
-        System.out.printf("%-12s %-14s %s%n", "用户名", "手机号", "用户ID");
-        System.out.println("------------------------------------------------------------------------");
-    }
-
-    /**
-     * 按表格格式打印一个用户，不显示密码
-     *
-     * @param user 要打印的用户
-     */
-    private void printUser(UserAccount user) {
-        System.out.printf("%-12s %-14s %s%n", user.getUserName(), user.getPhone(), user.getUserId());
-    }
+    private final UserAccount[] userAccounts = new UserAccount[MAX_SIZE];
 
     /**
      * 新增用户，容量已满或用户名重复时拒绝保存。
@@ -34,20 +19,18 @@ public class UserHandler {
      *
      * @param newUser 要新增的用户
      */
-    public void addUser(UserAccount newUser){
+    public void addUser(UserAccount newUser) {
         if (count == userAccounts.length) {
-            System.out.println("用户已满，无法新增！");
+            System.out.println("用户存储已满，无法新增！");
             return;
         }
-        for (int i = 0; i < count; i++) {
-            if(newUser.getUserName().equals(userAccounts[i].getUserName())){
-                System.out.println("用户名不能重复");
-                return;
-            }
+        if (findByName(newUser.getUserName()) != null) {
+            System.out.println("用户名已存在，新增失败！");
+            return;
         }
         userAccounts[count] = newUser;
         count++;
-        System.out.println("用户添加成功");
+        System.out.println("用户添加成功！");
     }
 
     /**
@@ -55,7 +38,7 @@ public class UserHandler {
      */
     public void queryAllUsers() {
         if (count == 0) {
-            System.out.println("暂无用户");
+            System.out.println("暂无用户。");
             return;
         }
         printHeader();
@@ -63,6 +46,7 @@ public class UserHandler {
             printUser(userAccounts[i]);
         }
     }
+
     /**
      * 按用户名查找用户
      *
@@ -91,5 +75,16 @@ public class UserHandler {
             }
         }
         return null;
+    }
+
+    private void printHeader() {
+        MenuUtil.printLine();
+        System.out.printf("%-12s %-14s %s%n", "用户名", "手机号", "用户ID");
+        MenuUtil.printLine();
+    }
+
+    // 不显示密码
+    private void printUser(UserAccount user) {
+        System.out.printf("%-12s %-14s %s%n", user.getUserName(), user.getPhone(), user.getUserId());
     }
 }

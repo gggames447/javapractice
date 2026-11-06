@@ -13,6 +13,7 @@ import java.util.Scanner;
 // 商品分类管理子菜单
 public class CategoryUI {
 
+    // 显示分类管理菜单，循环处理用户的选择，输入 0 返回上级
     public static void showMenu(Scanner scanner, CategoryHandler categoryHandler) {
         while (true) {
             MenuUtil.printCategoryMenu();
