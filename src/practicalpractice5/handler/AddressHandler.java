@@ -2,6 +2,7 @@ package practicalpractice5.handler;
 
 import practicalpractice5.account.UserAccount;
 import practicalpractice5.account.UserAddressInfo;
+import practicalpractice5.utils.exception.BusinessException;
 import practicalpractice5.utils.menu.MenuUtil;
 
 /**
@@ -19,15 +20,14 @@ public class AddressHandler {
      * 所属用户是否存在由 AddressUI 在创建地址前检查。
      *
      * @param newAddress 要新增的地址
+     * @throws BusinessException 存储已满时
      */
     public void addAddress(UserAddressInfo newAddress) {
         if (count == addresses.length) {
-            System.out.println("地址存储已满，无法新增！");
-            return;
+            throw new BusinessException("地址存储已满，无法新增");
         }
         addresses[count] = newAddress;
         count++;
-        System.out.println("收货地址添加成功！");
     }
 
     /**

@@ -4,6 +4,7 @@ import practicalpractice5.account.UserAccount;
 import practicalpractice5.account.UserAddressInfo;
 import practicalpractice5.handler.AddressHandler;
 import practicalpractice5.handler.UserHandler;
+import practicalpractice5.utils.exception.BusinessException;
 import practicalpractice5.utils.input.InputUtil;
 import practicalpractice5.utils.menu.BaseMenu;
 import practicalpractice5.utils.menu.MenuUtil;
@@ -50,14 +51,13 @@ public class AddressUI extends BaseMenu {
         String userName = InputUtil.getString(scanner, "请输入所属用户名：");
         UserAccount user = userHandler.findByName(userName);
         if (user == null) {
-            System.out.println("用户不存在，新增失败！");
-            return;
+            throw new BusinessException("用户「" + userName + "」不存在");
         }
-
         String receiver = InputUtil.getString(scanner, "请输入收件人：");
         String telephone = InputUtil.getString(scanner, "请输入收件人电话：");
         String addressInfo = InputUtil.getString(scanner, "请输入详细地址：");
 
         addressHandler.addAddress(new UserAddressInfo(user.getUserId(), receiver, telephone, addressInfo));
+        System.out.println("收货地址添加成功！");
     }
 }

@@ -47,6 +47,7 @@ public class UserUI extends BaseMenu {
         String phone = InputUtil.getString(scanner, "请输入手机号码：");
         String password = InputUtil.getString(scanner, "请输入密码：");
         userHandler.addUser(new UserAccount(userName, phone, password));
+        System.out.println("用户添加成功！");
     }
 
     /**

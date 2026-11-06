@@ -5,6 +5,7 @@ import practicalpractice2.goods.Goods;
 import practicalpractice2.goods.GoodsHandler;
 import practicalpractice2.utils.back.BackUtils;
 import practicalpractice2.utils.exception.BackException;
+import practicalpractice2.utils.exception.BusinessException;
 import practicalpractice2.utils.exception.InputException;
 import practicalpractice2.utils.input.InputUtil;
 import practicalpractice2.utils.menu.MenuUtil;
@@ -31,6 +32,9 @@ public class GoodsUI {
                 }
             } catch (InputException e) {
                 System.out.println("输入错误：" + e.getMessage());
+            } catch (BusinessException e) {
+                // InputException 也是 BusinessException，所以必须写在它后面
+                System.out.println("操作失败：" + e.getMessage());
             } catch (BackException e) {
                 System.out.println("返回主菜单");
                 return;
@@ -49,10 +53,10 @@ public class GoodsUI {
 
         // 分类必须先存在，商品才能归到它下面
         if (!categoryHandler.existsById(cateId)) {
-            System.out.println("分类不存在，新增失败！");
-            return;
+            throw new BusinessException("分类「" + cateId + "」不存在");
         }
         goodsHandler.addGoods(new Goods(id, name, price, stock, cateId));
+        System.out.println("商品添加成功！");
     }
 
     // 读取价格区间并查询，下限不能大于上限

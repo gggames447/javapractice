@@ -3,6 +3,7 @@ package practicalpractice5.controller;
 import practicalpractice5.goods.Goods;
 import practicalpractice5.handler.CategoryHandler;
 import practicalpractice5.handler.GoodsHandler;
+import practicalpractice5.utils.exception.BusinessException;
 import practicalpractice5.utils.input.InputUtil;
 import practicalpractice5.utils.menu.BaseMenu;
 import practicalpractice5.utils.menu.MenuUtil;
@@ -40,7 +41,7 @@ public class GoodsUI extends BaseMenu {
             case 3 -> findByPriceRange();
             case 4 -> goodsHandler.stockAlarm();
             case 5 -> goodsHandler.findGoods(InputUtil.getString(scanner, "请输入商品名称："));
-            case 6 -> goodsHandler.deleteGoods(InputUtil.getString(scanner, "请输入商品名称："));
+            case 6 -> deleteGoods();
             case 7 -> sortByPrice();
             case 8 -> goodsHandler.queryByKeyword(InputUtil.getString(scanner, "请输入关键字："));
             case 9 -> goodsHandler.showStatistics();
@@ -61,10 +62,19 @@ public class GoodsUI extends BaseMenu {
 
         // 分类必须先存在，商品才能归到它下面
         if (!categoryHandler.existsById(cateId)) {
-            System.out.println("分类不存在，新增失败！");
-            return;
+            throw new BusinessException("分类「" + cateId + "」不存在");
         }
         goodsHandler.addGoods(new Goods(id, name, price, stock, cateId));
+        System.out.println("商品添加成功！");
+    }
+
+    /**
+     * 读取商品名称并删除
+     */
+    private void deleteGoods() {
+        String name = InputUtil.getString(scanner, "请输入商品名称：");
+        goodsHandler.deleteGoods(name);
+        System.out.println("商品删除成功！");
     }
 
     /**

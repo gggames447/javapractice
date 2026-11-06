@@ -4,6 +4,7 @@ import practicalpractice4.category.Category;
 import practicalpractice4.category.CategoryHandler;
 import practicalpractice4.utils.back.BackUtils;
 import practicalpractice4.utils.exception.BackException;
+import practicalpractice4.utils.exception.BusinessException;
 import practicalpractice4.utils.exception.InputException;
 import practicalpractice4.utils.input.InputUtil;
 import practicalpractice4.utils.menu.MenuUtil;
@@ -35,6 +36,9 @@ public class CategoryUI {
                 }
             } catch (InputException e) {
                 System.out.println("输入错误：" + e.getMessage());
+            } catch (BusinessException e) {
+                // InputException 也是 BusinessException，所以必须写在它后面
+                System.out.println("操作失败：" + e.getMessage());
             } catch (BackException e) {
                 System.out.println("返回主菜单");
                 return;
@@ -54,5 +58,6 @@ public class CategoryUI {
         String name = InputUtil.getString(scanner, "请输入分类名称：");
         String desc = InputUtil.getString(scanner, "请输入分类描述：");
         categoryHandler.addCategory(new Category(id, name, desc));
+        System.out.println("分类添加成功！");
     }
 }

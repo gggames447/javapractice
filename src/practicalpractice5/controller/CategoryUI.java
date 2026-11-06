@@ -46,5 +46,6 @@ public class CategoryUI extends BaseMenu {
         String name = InputUtil.getString(scanner, "请输入分类名称：");
         String desc = InputUtil.getString(scanner, "请输入分类描述：");
         categoryHandler.addCategory(new Category(id, name, desc));
+        System.out.println("分类添加成功！");
     }
 }

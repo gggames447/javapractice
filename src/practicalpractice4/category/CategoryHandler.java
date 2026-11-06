@@ -1,5 +1,6 @@
 package practicalpractice4.category;
 
+import practicalpractice4.utils.exception.BusinessException;
 import practicalpractice4.utils.menu.MenuUtil;
 
 /**
@@ -31,25 +32,22 @@ public class CategoryHandler {
      * 新增分类，编号和名称都不能重复
      *
      * @param newCategory 要新增的分类
+     * @throws BusinessException 存储已满，或编号、名称已存在时
      */
     public void addCategory(Category newCategory) {
         if (count == categories.length) {
-            System.out.println("分类存储已满，无法新增！");
-            return;
+            throw new BusinessException("分类存储已满，无法新增");
         }
         for (int i = 0; i < count; i++) {
             if (newCategory.getCateId().equals(categories[i].getCateId())) {
-                System.out.println("分类编号已存在，新增失败！");
-                return;
+                throw new BusinessException("分类编号「" + newCategory.getCateId() + "」已存在");
             }
             if (newCategory.getCateName().equals(categories[i].getCateName())) {
-                System.out.println("分类名称已存在，新增失败！");
-                return;
+                throw new BusinessException("分类名称「" + newCategory.getCateName() + "」已存在");
             }
         }
         categories[count] = newCategory;
         count++;
-        System.out.println("分类添加成功！");
     }
 
     /**

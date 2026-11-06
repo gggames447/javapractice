@@ -1,6 +1,7 @@
 package practicalpractice5.handler;
 
 import practicalpractice5.account.UserAccount;
+import practicalpractice5.utils.exception.BusinessException;
 import practicalpractice5.utils.menu.MenuUtil;
 
 /**
@@ -18,19 +19,17 @@ public class UserHandler {
      * 手机号、密码等格式已经在 UserAccount 的 setter 里校验过。
      *
      * @param newUser 要新增的用户
+     * @throws BusinessException 存储已满或用户名已存在时
      */
     public void addUser(UserAccount newUser) {
         if (count == userAccounts.length) {
-            System.out.println("用户存储已满，无法新增！");
-            return;
+            throw new BusinessException("用户存储已满，无法新增");
         }
         if (findByName(newUser.getUserName()) != null) {
-            System.out.println("用户名已存在，新增失败！");
-            return;
+            throw new BusinessException("用户名「" + newUser.getUserName() + "」已存在");
         }
         userAccounts[count] = newUser;
         count++;
-        System.out.println("用户添加成功！");
     }
 
     /**

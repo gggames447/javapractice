@@ -1,5 +1,6 @@
 package practicalpractice2.category;
 
+import practicalpractice2.utils.exception.BusinessException;
 import practicalpractice2.utils.menu.MenuUtil;
 
 // 管理商品分类，用数组存储，最多 20 个
@@ -20,25 +21,21 @@ public class CategoryHandler {
         return false;
     }
 
-    // 新增分类，编号和名称都不能重复
+    // 新增分类，编号和名称都不能重复，不满足时抛出异常，由菜单提示
     public void addCategory(Category newCategory) {
         if (count == categories.length) {
-            System.out.println("分类存储已满，无法新增！");
-            return;
+            throw new BusinessException("分类存储已满，无法新增");
         }
         for (int i = 0; i < count; i++) {
             if (newCategory.getCateId().equals(categories[i].getCateId())) {
-                System.out.println("分类编号已存在，新增失败！");
-                return;
+                throw new BusinessException("分类编号「" + newCategory.getCateId() + "」已存在");
             }
             if (newCategory.getCateName().equals(categories[i].getCateName())) {
-                System.out.println("分类名称已存在，新增失败！");
-                return;
+                throw new BusinessException("分类名称「" + newCategory.getCateName() + "」已存在");
             }
         }
         categories[count] = newCategory;
         count++;
-        System.out.println("分类添加成功！");
     }
 
     // 查看全部分类，没有分类时提示暂无数据

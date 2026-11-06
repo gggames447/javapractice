@@ -1,5 +1,7 @@
 package practicalpractice4.goods;
 
+import practicalpractice4.utils.exception.BusinessException;
+import practicalpractice4.utils.exception.InputException;
 import practicalpractice4.utils.menu.MenuUtil;
 
 /**
@@ -17,52 +19,47 @@ public class GoodsHandler {
      * 新增商品，容量、单价、库存、编号和名称都检查通过才保存
      *
      * @param newGoods 要新增的商品
+     * @throws InputException 单价或库存不合法时
+     * @throws BusinessException 存储已满，或编号、名称已存在时
      */
     public void addGoods(Goods newGoods) {
         if (count == goods.length) {
-            System.out.println("【商品存储上限，无法新增】");
-            return;
+            throw new BusinessException("【商品存储上限，无法新增】");
         }
         if (!checkPrice(newGoods.getGoodPrice())) {
-            System.out.println("单价必须大于 0，新增失败！");
-            return;
+            throw new InputException("单价必须大于 0");
         }
         if (!checkStock(newGoods.getGoodStock())) {
-            System.out.println("库存不能为负数，新增失败！");
-            return;
+            throw new InputException("库存不能为负数");
         }
         for (int i = 0; i < count; i++) {
             if (newGoods.getGoodId().equals(goods[i].getGoodId())) {
-                System.out.println("商品编号已存在，新增失败！");
-                return;
+                throw new BusinessException("商品编号「" + newGoods.getGoodId() + "」已存在");
             }
             if (newGoods.getGoodName().equals(goods[i].getGoodName())) {
-                System.out.println("商品名称已存在，新增失败！");
-                return;
+                throw new BusinessException("商品名称「" + newGoods.getGoodName() + "」已存在");
             }
         }
         goods[count] = newGoods;
         count++;
-        System.out.println("商品添加成功！");
     }
 
     /**
      * 按名称删除商品，后面的商品依次前移，中间不留空位
      *
      * @param name 要删除的商品名称
+     * @throws BusinessException 找不到该商品时
      */
     public void deleteGoods(String name) {
         int index = findIndexByName(name);
         if (index == -1) {
-            System.out.println("找不到该商品，删除失败！");
-            return;
+            throw new BusinessException("找不到商品「" + name + "」");
         }
         for (int i = index; i < count - 1; i++) {
             goods[i] = goods[i + 1];
         }
         count--;
         goods[count] = null;
-        System.out.println("商品删除成功！");
     }
 
     /**

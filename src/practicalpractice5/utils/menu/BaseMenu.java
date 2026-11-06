@@ -1,5 +1,6 @@
 package practicalpractice5.utils.menu;
 
+import practicalpractice5.utils.exception.BusinessException;
 import practicalpractice5.utils.exception.InputException;
 import practicalpractice5.utils.input.InputUtil;
 
@@ -48,6 +49,9 @@ public abstract class BaseMenu {
                 handleChoice(choice);
             } catch (InputException e) {
                 System.out.println("输入错误：" + e.getMessage());
+            } catch (BusinessException e) {
+                // InputException 也是 BusinessException，所以必须写在它后面
+                System.out.println("操作失败：" + e.getMessage());
             }
         }
     }

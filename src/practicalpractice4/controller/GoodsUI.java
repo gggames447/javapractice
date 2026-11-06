@@ -5,6 +5,7 @@ import practicalpractice4.goods.Goods;
 import practicalpractice4.goods.GoodsHandler;
 import practicalpractice4.utils.back.BackUtils;
 import practicalpractice4.utils.exception.BackException;
+import practicalpractice4.utils.exception.BusinessException;
 import practicalpractice4.utils.exception.InputException;
 import practicalpractice4.utils.input.InputUtil;
 import practicalpractice4.utils.menu.MenuUtil;
@@ -36,7 +37,7 @@ public class GoodsUI {
                     case 3 -> findByPriceRange(scanner, goodsHandler);
                     case 4 -> goodsHandler.stockAlarm();
                     case 5 -> goodsHandler.findGoods(InputUtil.getString(scanner, "请输入商品名称："));
-                    case 6 -> goodsHandler.deleteGoods(InputUtil.getString(scanner, "请输入商品名称："));
+                    case 6 -> deleteGoods(scanner, goodsHandler);
                     case 7 -> sortByPrice(scanner, goodsHandler);
                     case 8 -> goodsHandler.queryByKeyword(InputUtil.getString(scanner, "请输入关键字："));
                     case 9 -> goodsHandler.showStatistics();
@@ -44,6 +45,9 @@ public class GoodsUI {
                 }
             } catch (InputException e) {
                 System.out.println("输入错误：" + e.getMessage());
+            } catch (BusinessException e) {
+                // InputException 也是 BusinessException，所以必须写在它后面
+                System.out.println("操作失败：" + e.getMessage());
             } catch (BackException e) {
                 System.out.println("返回主菜单");
                 return;
@@ -68,10 +72,22 @@ public class GoodsUI {
 
         // 分类必须先存在，商品才能归到它下面
         if (!categoryHandler.existsById(cateId)) {
-            System.out.println("分类不存在，新增失败！");
-            return;
+            throw new BusinessException("分类「" + cateId + "」不存在");
         }
         goodsHandler.addGoods(new Goods(id, name, price, stock, cateId));
+        System.out.println("商品添加成功！");
+    }
+
+    /**
+     * 读取商品名称并删除
+     *
+     * @param scanner 键盘输入
+     * @param goodsHandler 商品数据
+     */
+    private static void deleteGoods(Scanner scanner, GoodsHandler goodsHandler) {
+        String name = InputUtil.getString(scanner, "请输入商品名称：");
+        goodsHandler.deleteGoods(name);
+        System.out.println("商品删除成功！");
     }
 
     /**
