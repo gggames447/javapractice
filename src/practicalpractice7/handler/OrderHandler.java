@@ -3,30 +3,27 @@ package practicalpractice7.handler;
 import practicalpractice7.entity.Goods;
 import practicalpractice7.entity.Order;
 import practicalpractice7.entity.OrderItem;
-import practicalpractice7.entity.UserAccount;
 import practicalpractice7.enums.OrderStatus;
+import practicalpractice7.utils.exception.BusinessException;
 import practicalpractice7.utils.exception.InputException;
+import practicalpractice7.utils.exception.OrderStatusException;
 import practicalpractice7.utils.exception.StockNotEnoughException;
 
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 /**
- * 管理订单：生成订单号、下单（检查并扣减库存）、查询和修改订单状态。
- * 存储、新增、查看全部、按 ID 删除由父类 BaseHandler 提供。
+ * 管理订单：生成订单号、下单（检查并扣减库存）、查询和修改状态。
+ * 存储、新增、取得全部、按 ID 删除由父类 BaseHandler 提供。
  */
 public class OrderHandler extends BaseHandler<Order> {
-    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-    private final UserHandler userHandler;
     private final GoodsHandler goodsHandler;
     private int nextOrderNo = 1;
 
     /**
-     * @param userHandler 用户数据，打印订单时用来根据 userId 查出用户名
      * @param goodsHandler 商品数据，下单时用来检查和扣减库存
      */
-    public OrderHandler(UserHandler userHandler, GoodsHandler goodsHandler) {
+    public OrderHandler(GoodsHandler goodsHandler) {
         super(new Order[MAX_SIZE]);
-        this.userHandler = userHandler;
         this.goodsHandler = goodsHandler;
     }
 
@@ -46,7 +43,8 @@ public class OrderHandler extends BaseHandler<Order> {
      * 只要有一种商品库存不足，就抛出异常，后面的扣库存和保存都不会执行，不扣任何库存。
      *
      * @param order 要提交的订单
-     * @throws InputException 订单里没有商品，或订单数量已达上限时
+     * @throws InputException 订单里没有商品时
+     * @throws BusinessException 订单数量已达上限时
      * @throws StockNotEnoughException 有商品不存在或库存不足时
      */
     public void placeOrder(Order order) {
@@ -54,12 +52,57 @@ public class OrderHandler extends BaseHandler<Order> {
             throw new InputException("订单里没有商品");
         }
         if (count == array.length) {
-            throw new InputException("订单数量已达上限");
+            throw new BusinessException("订单数量已达上限");
         }
         checkStock(order);
         deductStock(order);
         add(order);
         nextOrderNo++;
+    }
+
+    /**
+     * 修改订单状态
+     *
+     * @param orderId 订单号
+     * @param newStatus 新状态
+     * @throws BusinessException 找不到订单时
+     * @throws OrderStatusException 不允许改为新状态时
+     */
+    public void changeStatus(String orderId, OrderStatus newStatus) {
+        getOrder(orderId).setStatus(newStatus);
+    }
+
+    /**
+     * 查出某个用户的全部订单
+     *
+     * @param userId 用户 ID
+     * @return 该用户的订单，一个都没有时长度为 0
+     */
+    public Order[] findByUser(String userId) {
+        Order[] result = new Order[count];
+        int found = 0;
+        for (int i = 0; i < count; i++) {
+            if (array[i].getUserId().equals(userId)) {
+                result[found] = array[i];
+                found++;
+            }
+        }
+        return Arrays.copyOf(result, found);
+    }
+
+    /**
+     * 按订单号取得订单，找不到时直接报错
+     *
+     * @param orderId 订单号
+     * @return 找到的订单
+     * @throws BusinessException 找不到订单时
+     */
+    public Order getOrder(String orderId) {
+        Order order = findById(orderId);
+        if (order == null) {
+            throw new BusinessException("找不到订单「" + orderId + "」");
+        }
+        return order;
     }
 
     /**
@@ -70,24 +113,14 @@ public class OrderHandler extends BaseHandler<Order> {
      */
     private void checkStock(Order order) {
         for (OrderItem item : order.getItems()) {
-            checkItemStock(item);
-        }
-    }
-
-    /**
-     * 检查一个订单项的商品是否存在、库存是否足够
-     *
-     * @param item 要检查的订单项
-     * @throws StockNotEnoughException 商品不存在或库存不足时
-     */
-    private void checkItemStock(OrderItem item) {
-        Goods goods = goodsHandler.findById(item.getGoodsId());
-        if (goods == null) {
-            throw new StockNotEnoughException("商品「" + item.getGoodsName() + "」已不存在");
-        }
-        if (goods.getGoodStock() < item.getNum()) {
-            throw new StockNotEnoughException("商品「" + goods.getGoodName() + "」库存不足，当前库存 "
-                    + goods.getGoodStock() + "，需要 " + item.getNum());
+            Goods goods = goodsHandler.findById(item.getGoodsId());
+            if (goods == null) {
+                throw new StockNotEnoughException("商品「" + item.getGoodsName() + "」已不存在");
+            }
+            if (goods.getStock() < item.getNum()) {
+                throw new StockNotEnoughException("商品「" + goods.getGoodsName() + "」库存不足，当前库存 "
+                        + goods.getStock() + "，需要 " + item.getNum());
+            }
         }
     }
 
@@ -99,122 +132,8 @@ public class OrderHandler extends BaseHandler<Order> {
     private void deductStock(Order order) {
         for (OrderItem item : order.getItems()) {
             Goods goods = goodsHandler.findById(item.getGoodsId());
-            goods.setGoodStock(goods.getGoodStock() - item.getNum());
-        }
-    }
-    /**
-     * 修改订单状态
-     *
-     * @param orderId 订单号
-     * @param newStatus 新状态
-     */
-    public void changeStatus(String orderId, OrderStatus newStatus) {
-        int index = findIndexById(orderId);
-        if (index == -1) {
-            System.out.println("找不到该订单");
-            return;
-        }
-        array[index].setStatus(newStatus);
-        System.out.println("订单状态已改为：" + newStatus.getLabel());
-    }
-    @Override
-    protected void printHeader() {
-        System.out.println("------------------------------------------------------------------------");
-        System.out.printf("%-8s %-10s %-18s %-6s %-10s %s%n",
-                "订单号", "用户", "下单时间", "种数", "总金额", "状态");
-        System.out.println("------------------------------------------------------------------------");
-    }
-
-    /**
-     * 打印订单里每一种商品的名称、单价、数量和小计
-     *
-     * @param order 要打印的订单
-     */
-    private void printOrderItems(Order order) {
-        System.out.println("------------------------------------------------------------");
-        System.out.printf("%-15s %-10s %-8s %-10s%n", "商品名称", "单价", "数量", "小计");
-        for (OrderItem item : order.getItems()) {
-            System.out.printf("%-15s %-10.2f %-8d %-10.2f%n",
-                    item.getGoodsName(), item.getUnitPrice(), item.getNum(), item.getSubTotal());
+            goods.setStock(goods.getStock() - item.getNum());
         }
     }
 
-    @Override
-    protected void printItem(Order order) {
-        UserAccount user = userHandler.findById(order.getUserId());
-        String userName = (user == null) ? "未知用户" : user.getUserName();
-        System.out.printf("%-8s %-10s %-18s %-6d %-10.2f %s%n",
-                order.getOrderId(),
-                userName,
-                order.getOrderTime().format(TIME_FORMAT),
-                order.getItemCount(),
-                order.getTotalMoney(),
-                order.getStatus().getLabel());
-    }
-    /**
-     * 打印订单的合计金额
-     *
-     * @param order 要打印的订单
-     */
-    private void printTotal(Order order) {
-        System.out.println("------------------------------------------------------------");
-        System.out.printf("订单总金额：%.2f%n", order.getTotalMoney());
-    }
-    /**
-     * 查看订单详情：订单概要加上每一种商品的单价、数量和小计
-     *
-     * @param orderId 订单号
-     */
-    public void showDetail(String orderId) {
-        int index = findIndexById(orderId);
-        if (index == -1) {
-            System.out.println("找不到该订单");
-            return;
-        }
-        Order order = array[index];
-
-        printHeader();
-        printItem(order);
-        printOrderItems(order);
-        printTotal(order);
-    }
-
-    /**
-     * 查看某个用户的全部订单
-     *
-     * @param userId 用户 ID
-     */
-    public void queryByUser(String userId) {
-        if (countByUser(userId) == 0) {
-            System.out.println("该用户暂无订单。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            if (array[i].getUserId().equals(userId)) {
-                printItem(array[i]);
-            }
-        }
-    }
-
-    /**
-     * 统计某个用户的订单数量
-     *
-     * @param userId 用户 ID
-     * @return 该用户的订单个数
-     */
-    private int countByUser(String userId) {
-        int orderCount = 0;
-        for (int i = 0; i < count; i++) {
-            if (array[i].getUserId().equals(userId)) {
-                orderCount++;
-            }
-        }
-        return orderCount;
-    }
 }
-
-
-
-
-

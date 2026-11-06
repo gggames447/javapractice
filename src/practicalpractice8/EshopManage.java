@@ -29,8 +29,8 @@ public class EshopManage {
             CategoryHandler categoryHandler = new CategoryHandler();
             GoodsHandler goodsHandler = new GoodsHandler();
             UserHandler userHandler = new UserHandler();
-            AddressHandler addressHandler = new AddressHandler(userHandler);
-            OrderHandler orderHandler = new OrderHandler(userHandler, goodsHandler, addressHandler);
+            AddressHandler addressHandler = new AddressHandler();
+            OrderHandler orderHandler = new OrderHandler(goodsHandler);
 
             new MainMenuUI(scanner, currentUser, categoryHandler, goodsHandler,
                     userHandler, addressHandler, orderHandler).show();

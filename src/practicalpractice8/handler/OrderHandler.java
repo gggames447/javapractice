@@ -3,38 +3,28 @@ package practicalpractice8.handler;
 import practicalpractice8.entity.Goods;
 import practicalpractice8.entity.Order;
 import practicalpractice8.entity.OrderItem;
-import practicalpractice8.entity.UserAddressInfo;
 import practicalpractice8.enums.OrderStatus;
 import practicalpractice8.utils.exception.BusinessException;
 import practicalpractice8.utils.exception.InputException;
 import practicalpractice8.utils.exception.OrderStatusException;
 import practicalpractice8.utils.exception.StockNotEnoughException;
-import practicalpractice8.utils.menu.MenuUtil;
 
-import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 
 /**
  * 管理订单：生成订单号、下单（检查并扣减库存）、查询、修改状态、取消订单和消费统计。
- * 存储、新增、查看全部、按 ID 删除由父类 BaseHandler 提供。
+ * 存储、新增、取得全部、按 ID 删除由父类 BaseHandler 提供。
  */
 public class OrderHandler extends BaseHandler<Order> {
-    private static final DateTimeFormatter TIME_FORMAT = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
-
-    private final UserHandler userHandler;
     private final GoodsHandler goodsHandler;
-    private final AddressHandler addressHandler;
     private int nextOrderNo = 1;
 
     /**
-     * @param userHandler 用户数据，打印订单时用来根据 userId 查出用户名
      * @param goodsHandler 商品数据，下单和取消订单时用来扣减、回补库存
-     * @param addressHandler 地址数据，查看订单详情时用来显示收货地址
      */
-    public OrderHandler(UserHandler userHandler, GoodsHandler goodsHandler, AddressHandler addressHandler) {
+    public OrderHandler(GoodsHandler goodsHandler) {
         super(new Order[MAX_SIZE]);
-        this.userHandler = userHandler;
         this.goodsHandler = goodsHandler;
-        this.addressHandler = addressHandler;
     }
 
     /**
@@ -117,36 +107,21 @@ public class OrderHandler extends BaseHandler<Order> {
     }
 
     /**
-     * 查看某个用户的全部订单
+     * 查出某个用户的全部订单
      *
      * @param userId 用户 ID
+     * @return 该用户的订单，一个都没有时长度为 0
      */
-    public void queryByUser(String userId) {
+    public Order[] findByUser(String userId) {
+        Order[] result = new Order[count];
         int found = 0;
         for (int i = 0; i < count; i++) {
             if (array[i].getUserId().equals(userId)) {
-                printFound(array[i], found);
+                result[found] = array[i];
                 found++;
             }
         }
-        if (found == 0) {
-            System.out.println("该用户暂无订单。");
-        }
-    }
-
-    /**
-     * 查看订单详情：订单概要、收货地址、每一种商品的单价、数量和小计，以及合计
-     *
-     * @param orderId 订单号
-     * @throws BusinessException 找不到订单时
-     */
-    public void showDetail(String orderId) {
-        Order order = getOrder(orderId);
-        printHeader();
-        printItem(order);
-        printAddress(order);
-        printOrderItems(order);
-        printTotal(order);
+        return Arrays.copyOf(result, found);
     }
 
     /**
@@ -156,7 +131,7 @@ public class OrderHandler extends BaseHandler<Order> {
      * @return 找到的订单
      * @throws BusinessException 找不到订单时
      */
-    private Order getOrder(String orderId) {
+    public Order getOrder(String orderId) {
         Order order = findById(orderId);
         if (order == null) {
             throw new BusinessException("找不到订单「" + orderId + "」");
@@ -207,62 +182,5 @@ public class OrderHandler extends BaseHandler<Order> {
                 goods.setStock(goods.getStock() + item.getNum());
             }
         }
-    }
-
-    @Override
-    protected void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-8s %-10s %-18s %-6s %-10s %s%n", "订单号", "用户", "下单时间", "种数", "总金额", "状态");
-        MenuUtil.printLine();
-    }
-
-    @Override
-    protected void printItem(Order order) {
-        System.out.printf("%-8s %-10s %-18s %-6d %-10.2f %s%n",
-                order.getOrderId(),
-                userHandler.getUserNameById(order.getUserId()),
-                order.getOrderTime().format(TIME_FORMAT),
-                order.getItemCount(),
-                order.getTotalMoney(),
-                order.getStatus().getLabel());
-    }
-
-    /**
-     * 打印订单的收货地址
-     *
-     * @param order 要打印的订单
-     */
-    private void printAddress(Order order) {
-        UserAddressInfo address = addressHandler.findById(order.getAddressId());
-        if (address == null) {
-            System.out.println("收货地址：地址已删除");
-            return;
-        }
-        System.out.println("收货地址：" + address.getReceiver() + "，" + address.getTelephone()
-                + "，" + address.getAddressInfo());
-    }
-
-    /**
-     * 打印订单里每一种商品的名称、单价、数量和小计
-     *
-     * @param order 要打印的订单
-     */
-    private void printOrderItems(Order order) {
-        MenuUtil.printLine();
-        System.out.printf("%-15s %-10s %-8s %s%n", "商品名称", "单价", "数量", "小计");
-        for (OrderItem item : order.getItems()) {
-            System.out.printf("%-15s %-10.2f %-8d %.2f%n",
-                    item.getGoodsName(), item.getUnitPrice(), item.getNum(), item.getSubTotal());
-        }
-    }
-
-    /**
-     * 打印订单的合计金额
-     *
-     * @param order 要打印的订单
-     */
-    private void printTotal(Order order) {
-        MenuUtil.printLine();
-        System.out.printf("订单总金额：%.2f%n", order.getTotalMoney());
     }
 }

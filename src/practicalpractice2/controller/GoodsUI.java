@@ -9,10 +9,11 @@ import practicalpractice2.utils.exception.BusinessException;
 import practicalpractice2.utils.exception.InputException;
 import practicalpractice2.utils.input.InputUtil;
 import practicalpractice2.utils.menu.MenuUtil;
+import practicalpractice2.view.GoodsView;
 
 import java.util.Scanner;
 
-// 商品管理子菜单，只负责读输入，具体操作交给 GoodsHandler
+// 商品管理子菜单：读输入，交给 GoodsHandler 处理，再用 GoodsView 显示结果
 public class GoodsUI {
 
     // 显示商品管理菜单，循环处理用户的选择，输入 0 返回上级
@@ -25,9 +26,9 @@ public class GoodsUI {
 
                 switch (choice) {
                     case 1 -> addGoods(scanner, goodsHandler, categoryHandler);
-                    case 2 -> goodsHandler.queryAll();
-                    case 3 -> queryByPriceRange(scanner, goodsHandler);
-                    case 4 -> goodsHandler.stockAlarm();
+                    case 2 -> printAllGoods(goodsHandler);
+                    case 3 -> findByPriceRange(scanner, goodsHandler);
+                    case 4 -> stockAlarm(goodsHandler);
                     default -> System.out.println("无效编号！");
                 }
             } catch (InputException e) {
@@ -60,7 +61,7 @@ public class GoodsUI {
     }
 
     // 读取价格区间并查询，下限不能大于上限
-    private static void queryByPriceRange(Scanner scanner, GoodsHandler goodsHandler) {
+    private static void findByPriceRange(Scanner scanner, GoodsHandler goodsHandler) {
         System.out.println("--- 按价格区间查询 ---");
         double min = InputUtil.getDouble(scanner, "请输入最低价格：");
         double max = InputUtil.getDouble(scanner, "请输入最高价格：");
@@ -69,6 +70,20 @@ public class GoodsUI {
             System.out.println("最低价格不能大于最高价格！");
             return;
         }
-        goodsHandler.queryByPriceRange(min, max);
+        GoodsView.printTable(goodsHandler.findByPriceRange(min, max), "在该价格区间内未找到商品。");
+    }
+
+    // 显示全部商品
+    private static void printAllGoods(GoodsHandler goodsHandler) {
+        GoodsView.printTable(goodsHandler.findAll(), "暂无数据。");
+    }
+
+    // 库存预警：列出库存低于 20 的商品
+    private static void stockAlarm(GoodsHandler goodsHandler) {
+        if (goodsHandler.isEmpty()) {
+            System.out.println("暂无商品，无法进行库存预警。");
+            return;
+        }
+        GoodsView.printLowStock(goodsHandler.findLowStock());
     }
 }

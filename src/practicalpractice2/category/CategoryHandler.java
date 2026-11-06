@@ -1,9 +1,10 @@
 package practicalpractice2.category;
 
 import practicalpractice2.utils.exception.BusinessException;
-import practicalpractice2.utils.menu.MenuUtil;
 
-// 管理商品分类，用数组存储，最多 20 个
+import java.util.Arrays;
+
+// 管理商品分类，用数组存储，最多 20 个。只管数据，不打印，显示交给 CategoryView。
 public class CategoryHandler {
     private static final int MAX_SIZE = 20;
 
@@ -21,7 +22,7 @@ public class CategoryHandler {
         return false;
     }
 
-    // 新增分类，编号和名称都不能重复，不满足时抛出异常，由菜单提示
+    // 新增分类，编号和名称都不能重复
     public void addCategory(Category newCategory) {
         if (count == categories.length) {
             throw new BusinessException("分类存储已满，无法新增");
@@ -38,26 +39,8 @@ public class CategoryHandler {
         count++;
     }
 
-    // 查看全部分类，没有分类时提示暂无数据
-    public void queryAll() {
-        if (count == 0) {
-            System.out.println("暂无数据。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printCategory(categories[i]);
-        }
-    }
-
-    private void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-20s %s%n", "分类编号", "分类名称", "分类描述");
-        MenuUtil.printLine();
-    }
-
-    private void printCategory(Category category) {
-        System.out.printf("%-10s %-20s %s%n",
-                category.getCateId(), category.getCateName(), category.getCateDesc());
+    // 返回全部分类的副本，没有分类时长度为 0
+    public Category[] findAll() {
+        return Arrays.copyOf(categories, count);
     }
 }

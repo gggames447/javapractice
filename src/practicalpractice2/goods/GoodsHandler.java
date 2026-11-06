@@ -2,9 +2,10 @@ package practicalpractice2.goods;
 
 import practicalpractice2.utils.exception.BusinessException;
 import practicalpractice2.utils.exception.InputException;
-import practicalpractice2.utils.menu.MenuUtil;
 
-// 管理商品，用数组存储，最多 20 个
+import java.util.Arrays;
+
+// 管理商品，用数组存储，最多 20 个。只管数据和规则，不打印，显示交给 GoodsView。
 public class GoodsHandler {
     private static final int MAX_SIZE = 20;
     private static final int LOW_STOCK_THRESHOLD = 20;
@@ -36,67 +37,39 @@ public class GoodsHandler {
         count++;
     }
 
-    // 查看全部商品
-    public void queryAll() {
-        if (count == 0) {
-            System.out.println("暂无数据。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printGoods(goods[i]);
-        }
+    // 返回全部商品的副本，没有商品时长度为 0
+    public Goods[] findAll() {
+        return Arrays.copyOf(goods, count);
     }
 
-    // 查询价格在 minPrice ~ maxPrice 之间的商品（包含两端）
-    public void queryByPriceRange(double minPrice, double maxPrice) {
+    public boolean isEmpty() {
+        return count == 0;
+    }
+
+    // 查找价格在 minPrice ~ maxPrice 之间的商品（包含两端）
+    public Goods[] findByPriceRange(double minPrice, double maxPrice) {
+        Goods[] result = new Goods[count];
         int found = 0;
         for (int i = 0; i < count; i++) {
             double price = goods[i].getGoodPrice();
             if (price >= minPrice && price <= maxPrice) {
-                printFound(goods[i], found);
+                result[found] = goods[i];
                 found++;
             }
         }
-        if (found == 0) {
-            System.out.println("在该价格区间内未找到商品。");
-        }
+        return Arrays.copyOf(result, found);
     }
 
-    // 列出库存低于 20 的商品
-    public void stockAlarm() {
-        if (count == 0) {
-            System.out.println("暂无商品，无法进行库存预警。");
-            return;
-        }
-        int lowStockCount = 0;
+    // 库存预警：找出库存低于 20 的商品
+    public Goods[] findLowStock() {
+        Goods[] result = new Goods[count];
+        int found = 0;
         for (int i = 0; i < count; i++) {
             if (goods[i].getGoodStock() < LOW_STOCK_THRESHOLD) {
-                System.out.println("【库存紧张】" + goods[i].getGoodName() + "，剩余库存：" + goods[i].getGoodStock());
-                lowStockCount++;
+                result[found] = goods[i];
+                found++;
             }
         }
-        if (lowStockCount == 0) {
-            System.out.println("所有商品库存充足。");
-        }
-    }
-
-    // 查询时打印一个找到的商品；找到的是第一个时先打印表头，一个都没找到就不会出现空表头
-    private void printFound(Goods g, int foundBefore) {
-        if (foundBefore == 0) {
-            printHeader();
-        }
-        printGoods(g);
-    }
-
-    private void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-15s %-10s %-8s %s%n", "商品编号", "商品名称", "单价", "库存", "分类ID");
-        MenuUtil.printLine();
-    }
-
-    private void printGoods(Goods g) {
-        System.out.printf("%-10s %-15s %-10.2f %-8d %s%n",
-                g.getGoodId(), g.getGoodName(), g.getGoodPrice(), g.getGoodStock(), g.getCateId());
+        return Arrays.copyOf(result, found);
     }
 }

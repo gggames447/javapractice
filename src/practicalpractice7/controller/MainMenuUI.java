@@ -46,7 +46,8 @@ public class MainMenuUI extends BaseMenu {
 
     @Override
     protected void printMenu() {
-        System.out.println("\n当前账号: " + currentUser);
+        System.out.println();
+        System.out.println("当前账号：" + currentUser);
         MenuUtil.printMainMenu();
     }
 
@@ -68,6 +69,9 @@ public class MainMenuUI extends BaseMenu {
         return "成功退出系统";
     }
 
+    /**
+     * 【5】【6】都要用到订单菜单，创建的代码只写一次
+     */
     private OrderUI createOrderUI() {
         return new OrderUI(scanner, orderHandler, userHandler, goodsHandler);
     }

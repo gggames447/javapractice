@@ -8,6 +8,7 @@ import practicalpractice5.utils.exception.BusinessException;
 import practicalpractice5.utils.input.InputUtil;
 import practicalpractice5.utils.menu.BaseMenu;
 import practicalpractice5.utils.menu.MenuUtil;
+import practicalpractice5.view.AddressView;
 
 import java.util.Scanner;
 
@@ -38,7 +39,7 @@ public class AddressUI extends BaseMenu {
     protected void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addAddress();
-            case 2 -> addressHandler.queryAllUsersAddress(userHandler);
+            case 2 -> AddressView.printTable(addressHandler.findAll(), userHandler, "暂无地址。");
             default -> System.out.println("无效编号！");
         }
     }

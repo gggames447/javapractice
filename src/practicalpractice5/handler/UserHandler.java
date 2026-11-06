@@ -2,10 +2,11 @@ package practicalpractice5.handler;
 
 import practicalpractice5.account.UserAccount;
 import practicalpractice5.utils.exception.BusinessException;
-import practicalpractice5.utils.menu.MenuUtil;
+
+import java.util.Arrays;
 
 /**
- * 管理普通用户，用数组存储，最多 20 个
+ * 管理普通用户，用数组存储，最多 20 个。只管数据，不打印，显示交给 UserView。
  */
 public class UserHandler {
     private static final int MAX_SIZE = 20;
@@ -33,17 +34,10 @@ public class UserHandler {
     }
 
     /**
-     * 查看全部用户，没有用户时提示暂无用户
+     * @return 全部用户的副本，没有用户时长度为 0
      */
-    public void queryAllUsers() {
-        if (count == 0) {
-            System.out.println("暂无用户。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printUser(userAccounts[i]);
-        }
+    public UserAccount[] findAll() {
+        return Arrays.copyOf(userAccounts, count);
     }
 
     /**
@@ -74,16 +68,5 @@ public class UserHandler {
             }
         }
         return null;
-    }
-
-    private void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-12s %-14s %s%n", "用户名", "手机号", "用户ID");
-        MenuUtil.printLine();
-    }
-
-    // 不显示密码
-    private void printUser(UserAccount user) {
-        System.out.printf("%-12s %-14s %s%n", user.getUserName(), user.getPhone(), user.getUserId());
     }
 }

@@ -1,12 +1,12 @@
 package practicalpractice5.handler;
 
-import practicalpractice5.account.UserAccount;
 import practicalpractice5.account.UserAddressInfo;
 import practicalpractice5.utils.exception.BusinessException;
-import practicalpractice5.utils.menu.MenuUtil;
+
+import java.util.Arrays;
 
 /**
- * 管理收货地址，用数组存储，最多 20 个
+ * 管理收货地址，用数组存储，最多 20 个。只管数据，不打印，显示交给 AddressView。
  */
 public class AddressHandler {
     private static final int MAX_SIZE = 20;
@@ -31,37 +31,9 @@ public class AddressHandler {
     }
 
     /**
-     * 查看全部收货地址
-     *
-     * @param userHandler 用户数据，用来显示每条地址属于哪个用户
+     * @return 全部地址的副本，没有地址时长度为 0
      */
-    public void queryAllUsersAddress(UserHandler userHandler) {
-        if (count == 0) {
-            System.out.println("暂无地址。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printAddress(addresses[i], userHandler);
-        }
-    }
-
-    private void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-8s %-14s %s%n", "所属用户", "收件人", "电话", "详细地址");
-        MenuUtil.printLine();
-    }
-
-    /**
-     * 按表格格式打印一条地址，所属用户显示为用户名
-     *
-     * @param address 要打印的地址
-     * @param userHandler 用户数据，用来根据 userId 查出用户名
-     */
-    private void printAddress(UserAddressInfo address, UserHandler userHandler) {
-        UserAccount user = userHandler.findById(address.getUserId());
-        String userName = (user == null) ? "未知用户" : user.getUserName();
-        System.out.printf("%-10s %-8s %-14s %s%n",
-                userName, address.getReceiver(), address.getTelephone(), address.getAddressInfo());
+    public UserAddressInfo[] findAll() {
+        return Arrays.copyOf(addresses, count);
     }
 }

@@ -5,7 +5,7 @@ import practicalpractice6.utils.exception.InputException;
 /**
  * 商品分类
  */
-public class Category extends BaseEntity{
+public class Category extends BaseEntity {
     private String cateName;
     private String cateDesc;
 
@@ -27,14 +27,11 @@ public class Category extends BaseEntity{
         return getId();
     }
 
-
     public String getCateName() {
         return cateName;
     }
 
     /**
-     * 设置分类名称
-     *
      * @param cateName 分类名称
      * @throws InputException 名称为 null 或只有空格时
      */
@@ -52,6 +49,4 @@ public class Category extends BaseEntity{
     public void setCateDesc(String cateDesc) {
         this.cateDesc = cateDesc;
     }
-
-
 }

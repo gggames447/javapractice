@@ -4,10 +4,12 @@ import practicalpractice8.entity.BaseEntity;
 import practicalpractice8.interfaces.DataOperate;
 import practicalpractice8.utils.exception.BusinessException;
 
+import java.util.Arrays;
+
 /**
- * 所有 Handler 的公共部分：用数组存数据，提供新增、查看、查找、按 ID 删除。
- * 子类只需要实现表头和每一行的打印；需要额外的新增规则时重写 validateBeforeAdd。
- * 操作失败时抛出异常，不打印提示，提示由菜单负责。
+ * 所有 Handler 的公共部分：用数组存数据，提供新增、取得全部、查找、按 ID 删除。
+ * Handler 只管数据和业务规则，不打印任何东西：
+ * 查询方法返回数据，由 view 包负责显示；操作失败时抛出异常，由菜单负责提示。
  *
  * @param <T> 管理的实体类型，必须继承 BaseEntity，这样才能统一用 getId() 查找
  */
@@ -47,18 +49,18 @@ public abstract class BaseHandler<T extends BaseEntity> implements DataOperate<T
     }
 
     /**
-     * 查看全部，没有数据时提示暂无数据
+     * @return 全部数据的副本，外面改这个数组不会影响 Handler 里的数据
      */
     @Override
-    public void queryAll() {
-        if (count == 0) {
-            System.out.println("暂无数据。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printItem(array[i]);
-        }
+    public T[] findAll() {
+        return Arrays.copyOf(array, count);
+    }
+
+    /**
+     * @return 一条数据都没有时返回 true
+     */
+    public boolean isEmpty() {
+        return count == 0;
     }
 
     /**
@@ -116,20 +118,6 @@ public abstract class BaseHandler<T extends BaseEntity> implements DataOperate<T
     }
 
     /**
-     * 查询时打印一条找到的数据。找到的是第一条时先打印表头，
-     * 这样一条都没找到时就不会出现一个空表头。
-     *
-     * @param item 找到的数据
-     * @param foundBefore 在它之前已经找到了几条
-     */
-    protected void printFound(T item, int foundBefore) {
-        if (foundBefore == 0) {
-            printHeader();
-        }
-        printItem(item);
-    }
-
-    /**
      * 子类可以重写，补充自己的新增规则，比如名称不能重复。不通过时抛出异常。
      *
      * @param item 要新增的数据
@@ -137,14 +125,4 @@ public abstract class BaseHandler<T extends BaseEntity> implements DataOperate<T
      */
     protected void validateBeforeAdd(T item) {
     }
-
-    /** 打印表头，由子类决定有哪些列 */
-    protected abstract void printHeader();
-
-    /**
-     * 打印一行数据，由子类决定格式
-     *
-     * @param item 要打印的数据
-     */
-    protected abstract void printItem(T item);
 }

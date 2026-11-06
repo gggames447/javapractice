@@ -46,7 +46,8 @@ public class MainMenuUI extends BaseMenu {
 
     @Override
     protected void printMenu() {
-        System.out.println("\n当前账号: " + currentUser);
+        System.out.println();
+        System.out.println("当前账号：" + currentUser);
         MenuUtil.printMainMenu();
     }
 

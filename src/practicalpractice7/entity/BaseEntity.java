@@ -28,6 +28,11 @@ public abstract class BaseEntity {
         this(UUID.randomUUID().toString());
     }
 
-    public String getId() { return id; }
-    public LocalDateTime getCreateTime() { return createTime; }
+    public String getId() {
+        return id;
+    }
+
+    public LocalDateTime getCreateTime() {
+        return createTime;
+    }
 }

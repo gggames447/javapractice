@@ -2,9 +2,10 @@ package practicalpractice3.goods;
 
 import practicalpractice3.utils.exception.BusinessException;
 import practicalpractice3.utils.exception.InputException;
-import practicalpractice3.utils.menu.MenuUtil;
 
-// 管理商品，用数组存储，最多 20 个
+import java.util.Arrays;
+
+// 管理商品，用数组存储，最多 20 个。只管数据和规则，不打印，显示交给 GoodsView。
 public class GoodsHandler {
     private static final int MAX_SIZE = 20;
     private static final int LOW_STOCK_THRESHOLD = 20;
@@ -49,74 +50,59 @@ public class GoodsHandler {
         goods[count] = null;
     }
 
-    // 查看全部商品
-    public void queryAll() {
-        if (count == 0) {
-            System.out.println("暂无数据。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printGoods(goods[i]);
-        }
+    // 返回全部商品的副本，没有商品时长度为 0
+    public Goods[] findAll() {
+        return Arrays.copyOf(goods, count);
     }
 
-    // 按名称精确查找
-    public void queryByName(String name) {
+    public boolean isEmpty() {
+        return count == 0;
+    }
+
+    // 按名称精确查找，找不到返回 null
+    public Goods findByName(String name) {
         int index = findIndexByName(name);
-        if (index == -1) {
-            System.out.println("找不到该商品。");
-            return;
-        }
-        printHeader();
-        printGoods(goods[index]);
+        return (index == -1) ? null : goods[index];
     }
 
-    // 查询价格在 minPrice ~ maxPrice 之间的商品（包含两端）
-    public void queryByPriceRange(double minPrice, double maxPrice) {
+    // 查找价格在 minPrice ~ maxPrice 之间的商品（包含两端）
+    public Goods[] findByPriceRange(double minPrice, double maxPrice) {
+        Goods[] result = new Goods[count];
         int found = 0;
         for (int i = 0; i < count; i++) {
             double price = goods[i].getGoodPrice();
             if (price >= minPrice && price <= maxPrice) {
-                printFound(goods[i], found);
+                result[found] = goods[i];
                 found++;
             }
         }
-        if (found == 0) {
-            System.out.println("在该价格区间内未找到商品。");
-        }
+        return Arrays.copyOf(result, found);
     }
 
-    // 模糊查询：名称包含关键字就输出
-    public void queryByKeyword(String keyword) {
+    // 模糊查询：名称包含关键字的商品
+    public Goods[] findByKeyword(String keyword) {
+        Goods[] result = new Goods[count];
         int found = 0;
         for (int i = 0; i < count; i++) {
             if (goods[i].getGoodName().contains(keyword)) {
-                printFound(goods[i], found);
+                result[found] = goods[i];
                 found++;
             }
         }
-        if (found == 0) {
-            System.out.println("未找到商品。");
-        }
+        return Arrays.copyOf(result, found);
     }
 
-    // 列出库存低于 20 的商品
-    public void stockAlarm() {
-        if (count == 0) {
-            System.out.println("暂无商品，无法进行库存预警。");
-            return;
-        }
-        int lowStockCount = 0;
+    // 库存预警：找出库存低于 20 的商品
+    public Goods[] findLowStock() {
+        Goods[] result = new Goods[count];
+        int found = 0;
         for (int i = 0; i < count; i++) {
             if (goods[i].getGoodStock() < LOW_STOCK_THRESHOLD) {
-                System.out.println("【库存紧张】" + goods[i].getGoodName() + "，剩余库存：" + goods[i].getGoodStock());
-                lowStockCount++;
+                result[found] = goods[i];
+                found++;
             }
         }
-        if (lowStockCount == 0) {
-            System.out.println("所有商品库存充足。");
-        }
+        return Arrays.copyOf(result, found);
     }
 
     // 冒泡排序，type 为 1 升序、2 降序；排序会改变数组里原来的顺序
@@ -134,23 +120,27 @@ public class GoodsHandler {
                 }
             }
         }
-        queryAll();
     }
 
-    // 统计总库存和平均单价
-    public void showStatistics() {
-        if (count == 0) {
-            System.out.println("暂无数据。");
-            return;
-        }
+    // 所有商品的库存之和
+    public int getTotalStock() {
         int totalStock = 0;
-        double totalPrice = 0;
         for (int i = 0; i < count; i++) {
             totalStock += goods[i].getGoodStock();
+        }
+        return totalStock;
+    }
+
+    // 所有商品的平均单价，没有商品时返回 0
+    public double getAveragePrice() {
+        if (count == 0) {
+            return 0;
+        }
+        double totalPrice = 0;
+        for (int i = 0; i < count; i++) {
             totalPrice += goods[i].getGoodPrice();
         }
-        double averagePrice = totalPrice / count;
-        System.out.printf("总库存：%d，平均单价：%.2f%n", totalStock, averagePrice);
+        return totalPrice / count;
     }
 
     // 找到返回下标，找不到返回 -1，查找和删除都会用到
@@ -161,24 +151,5 @@ public class GoodsHandler {
             }
         }
         return -1;
-    }
-
-    // 查询时打印一个找到的商品；找到的是第一个时先打印表头，一个都没找到就不会出现空表头
-    private void printFound(Goods g, int foundBefore) {
-        if (foundBefore == 0) {
-            printHeader();
-        }
-        printGoods(g);
-    }
-
-    private void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-15s %-10s %-8s %s%n", "商品编号", "商品名称", "单价", "库存", "分类ID");
-        MenuUtil.printLine();
-    }
-
-    private void printGoods(Goods g) {
-        System.out.printf("%-10s %-15s %-10.2f %-8d %s%n",
-                g.getGoodId(), g.getGoodName(), g.getGoodPrice(), g.getGoodStock(), g.getCateId());
     }
 }

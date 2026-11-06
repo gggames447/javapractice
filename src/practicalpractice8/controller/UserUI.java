@@ -5,6 +5,7 @@ import practicalpractice8.handler.UserHandler;
 import practicalpractice8.utils.input.InputUtil;
 import practicalpractice8.utils.menu.BaseMenu;
 import practicalpractice8.utils.menu.MenuUtil;
+import practicalpractice8.view.UserView;
 
 import java.util.Scanner;
 
@@ -13,6 +14,7 @@ import java.util.Scanner;
  */
 public class UserUI extends BaseMenu {
     private final UserHandler userHandler;
+    private final UserView userView = new UserView();
 
     /**
      * @param scanner 键盘输入
@@ -32,7 +34,7 @@ public class UserUI extends BaseMenu {
     protected void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addUser();
-            case 2 -> userHandler.queryAll();
+            case 2 -> userView.printTable(userHandler.findAll(), "暂无数据。");
             case 3 -> queryByName();
             default -> System.out.println("无效编号！");
         }

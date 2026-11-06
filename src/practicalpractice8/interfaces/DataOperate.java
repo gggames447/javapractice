@@ -6,6 +6,7 @@ package practicalpractice8.interfaces;
  * @param <T> 管理的数据类型
  */
 public interface DataOperate<T> {
+
     /**
      * 新增一条数据
      *
@@ -14,9 +15,11 @@ public interface DataOperate<T> {
     void add(T item);
 
     /**
-     * 查看全部数据
+     * 取得全部数据，怎么显示由调用方决定
+     *
+     * @return 全部数据，没有数据时长度为 0
      */
-    void queryAll();
+    T[] findAll();
 
     /**
      * 按 ID 删除一条数据

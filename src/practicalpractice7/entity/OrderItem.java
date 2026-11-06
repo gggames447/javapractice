@@ -26,9 +26,9 @@ public class OrderItem extends BaseEntity {
             throw new InputException("购买数量必须大于 0");
         }
         this.orderId = orderId;
-        this.goodsId = goods.getGoodId();
-        this.goodsName = goods.getGoodName();
-        this.unitPrice = goods.getGoodPrice();
+        this.goodsId = goods.getGoodsId();
+        this.goodsName = goods.getGoodsName();
+        this.unitPrice = goods.getPrice();
         this.num = num;
     }
 

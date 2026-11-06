@@ -7,11 +7,12 @@ import practicalpractice5.utils.exception.BusinessException;
 import practicalpractice5.utils.input.InputUtil;
 import practicalpractice5.utils.menu.BaseMenu;
 import practicalpractice5.utils.menu.MenuUtil;
+import practicalpractice5.view.GoodsView;
 
 import java.util.Scanner;
 
 /**
- * 商品管理子菜单，只负责读输入，具体操作交给 GoodsHandler
+ * 商品管理子菜单：读输入，交给 GoodsHandler 处理，再用 GoodsView 显示结果
  */
 public class GoodsUI extends BaseMenu {
     private final GoodsHandler goodsHandler;
@@ -37,14 +38,14 @@ public class GoodsUI extends BaseMenu {
     protected void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addGoods();
-            case 2 -> goodsHandler.queryAll();
+            case 2 -> printAllGoods();
             case 3 -> findByPriceRange();
-            case 4 -> goodsHandler.stockAlarm();
-            case 5 -> goodsHandler.findGoods(InputUtil.getString(scanner, "请输入商品名称："));
+            case 4 -> stockAlarm();
+            case 5 -> findByName();
             case 6 -> deleteGoods();
             case 7 -> sortByPrice();
-            case 8 -> goodsHandler.queryByKeyword(InputUtil.getString(scanner, "请输入关键字："));
-            case 9 -> goodsHandler.showStatistics();
+            case 8 -> findByKeyword();
+            case 9 -> showStatistics();
             default -> System.out.println("无效编号！");
         }
     }
@@ -89,19 +90,71 @@ public class GoodsUI extends BaseMenu {
             System.out.println("最低价格不能大于最高价格！");
             return;
         }
-        goodsHandler.findGoods(min, max);
+        GoodsView.printTable(goodsHandler.findGoods(min, max), "在该价格区间内未找到商品。");
     }
 
     /**
-     * 选择排序方式：1 升序，2 降序，0 取消
+     * 选择排序方式：1 升序，2 降序，0 取消。排好后显示全部商品。
      */
     private void sortByPrice() {
         MenuUtil.printSortMenu();
         int type = InputUtil.getInt(scanner);
         switch (type) {
-            case 1, 2 -> goodsHandler.sortByPrice(type);
+            case 1, 2 -> {
+                goodsHandler.sortByPrice(type);
+                printAllGoods();
+            }
             case 0 -> System.out.println("已取消排序");
             default -> System.out.println("无效编号！");
         }
+    }
+
+    /**
+     * 显示全部商品
+     */
+    private void printAllGoods() {
+        GoodsView.printTable(goodsHandler.findAll(), "暂无数据。");
+    }
+
+    /**
+     * 库存预警：列出库存低于 20 的商品，并显示数量
+     */
+    private void stockAlarm() {
+        if (goodsHandler.isEmpty()) {
+            System.out.println("暂无商品，无法进行库存预警。");
+            return;
+        }
+        GoodsView.printLowStock(goodsHandler.findLowStock());
+    }
+
+    /**
+     * 输入商品名称，精确查找并显示
+     */
+    private void findByName() {
+        Goods goods = goodsHandler.findGoods(InputUtil.getString(scanner, "请输入商品名称："));
+        if (goods == null) {
+            System.out.println("找不到该商品。");
+            return;
+        }
+        GoodsView.printOne(goods);
+    }
+
+    /**
+     * 输入关键字，模糊查询并显示
+     */
+    private void findByKeyword() {
+        String keyword = InputUtil.getString(scanner, "请输入关键字：");
+        GoodsView.printTable(goodsHandler.findByKeyword(keyword), "未找到商品。");
+    }
+
+    /**
+     * 显示总库存和平均单价
+     */
+    private void showStatistics() {
+        if (goodsHandler.isEmpty()) {
+            System.out.println("暂无数据。");
+            return;
+        }
+        System.out.printf("总库存：%d，平均单价：%.2f%n", goodsHandler.getTotalStock(), goodsHandler.getAveragePrice());
     }
 }

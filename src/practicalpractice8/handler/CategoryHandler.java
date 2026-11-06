@@ -2,7 +2,6 @@ package practicalpractice8.handler;
 
 import practicalpractice8.entity.Category;
 import practicalpractice8.utils.exception.BusinessException;
-import practicalpractice8.utils.menu.MenuUtil;
 
 /**
  * 管理商品分类
@@ -26,17 +25,5 @@ public class CategoryHandler extends BaseHandler<Category> {
                 throw new BusinessException("分类名称「" + item.getCateName() + "」已存在");
             }
         }
-    }
-
-    @Override
-    protected void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-20s %s%n", "分类编号", "分类名称", "分类描述");
-        MenuUtil.printLine();
-    }
-
-    @Override
-    protected void printItem(Category item) {
-        System.out.printf("%-10s %-20s %s%n", item.getCateId(), item.getCateName(), item.getCateDesc());
     }
 }

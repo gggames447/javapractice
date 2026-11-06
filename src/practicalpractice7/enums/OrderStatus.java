@@ -5,9 +5,14 @@ package practicalpractice7.enums;
  * 枚举名用英文（规范要求标识符不能用中文），显示给用户时用 getLabel() 取中文名称。
  */
 public enum OrderStatus {
-    UNPAID("待付款"), PAID("已付款" ), SHIPPED("已发货" ), FINISHED("已完成" ), CANCELLED("已取消" );
+    UNPAID("待付款"),
+    PAID("已付款"),
+    SHIPPED("已发货"),
+    FINISHED("已完成"),
+    CANCELLED("已取消");
+
     private final String label;
-    // 枚举的构造方法，只能是 private（可以省略不写）
+
     OrderStatus(String label) {
         this.label = label;
     }
@@ -15,7 +20,7 @@ public enum OrderStatus {
     /**
      * @return 显示给用户看的中文名称，例如「待付款」
      */
-    public String getLabel(){
+    public String getLabel() {
         return label;
     }
 

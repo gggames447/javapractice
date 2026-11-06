@@ -16,6 +16,9 @@ import practicalpractice8.utils.exception.StockNotEnoughException;
 import practicalpractice8.utils.input.InputUtil;
 import practicalpractice8.utils.menu.BaseMenu;
 import practicalpractice8.utils.menu.MenuUtil;
+import practicalpractice8.view.AddressView;
+import practicalpractice8.view.GoodsView;
+import practicalpractice8.view.OrderView;
 
 import java.util.Scanner;
 
@@ -29,6 +32,8 @@ public class OrderUI extends BaseMenu {
     private final UserHandler userHandler;
     private final GoodsHandler goodsHandler;
     private final AddressHandler addressHandler;
+    private final OrderView orderView;
+    private final GoodsView goodsView = new GoodsView();
 
     /**
      * @param scanner 键盘输入
@@ -44,6 +49,7 @@ public class OrderUI extends BaseMenu {
         this.userHandler = userHandler;
         this.goodsHandler = goodsHandler;
         this.addressHandler = addressHandler;
+        this.orderView = new OrderView(userHandler, addressHandler);
     }
 
     @Override
@@ -54,9 +60,9 @@ public class OrderUI extends BaseMenu {
     @Override
     protected void handleChoice(int choice) {
         switch (choice) {
-            case 1 -> orderHandler.queryAll();
+            case 1 -> orderView.printTable(orderHandler.findAll(), "暂无数据。");
             case 2 -> queryByUser();
-            case 3 -> orderHandler.showDetail(InputUtil.getString(scanner, "请输入订单号："));
+            case 3 -> showDetail();
             case 4 -> changeStatus();
             case 5 -> cancelOrder();
             case 6 -> showTotalSpending();
@@ -82,7 +88,7 @@ public class OrderUI extends BaseMenu {
         try {
             orderHandler.placeOrder(order);
             System.out.println("下单成功！订单号：" + order.getOrderId());
-            orderHandler.showDetail(order.getOrderId());
+            orderView.printDetail(order);
         } catch (StockNotEnoughException e) {
             ExceptionLogger.log(e);
             System.out.println("下单失败：" + e.getMessage());
@@ -102,16 +108,11 @@ public class OrderUI extends BaseMenu {
         if (addresses.length == 0) {
             throw new BusinessException("用户「" + user.getUserName() + "」还没有收货地址，请先在【收货地址管理】中添加");
         }
+        String[] options = new String[addresses.length];
         for (int i = 0; i < addresses.length; i++) {
-            UserAddressInfo address = addresses[i];
-            System.out.println("【" + (i + 1) + "】" + address.getReceiver() + "，"
-                    + address.getTelephone() + "，" + address.getAddressInfo());
+            options[i] = AddressView.describe(addresses[i]);
         }
-        int choice = InputUtil.getInt(scanner, "请选择收货地址：");
-        if (choice < 1 || choice > addresses.length) {
-            throw new InputException("无效的地址编号");
-        }
-        return addresses[choice - 1];
+        return addresses[chooseIndex(options, "请选择收货地址：")];
     }
 
     /**
@@ -121,7 +122,7 @@ public class OrderUI extends BaseMenu {
      * @param order 正在创建的订单
      */
     private void addItemsTo(Order order) {
-        goodsHandler.queryAll();
+        goodsView.printTable(goodsHandler.findAll(), "暂无商品。");
         while (true) {
             String goodsName = InputUtil.getString(scanner, "请输入商品名称（输入 0 结束）：");
             if (goodsName.equals(FINISH_CODE)) {
@@ -168,7 +169,12 @@ public class OrderUI extends BaseMenu {
      */
     private void queryByUser() {
         UserAccount user = userHandler.getByName(InputUtil.getString(scanner, "请输入用户名："));
-        orderHandler.queryByUser(user.getUserId());
+        orderView.printTable(orderHandler.findByUser(user.getUserId()), "该用户暂无订单。");
+    }
+
+    private void showDetail() {
+        String orderId = InputUtil.getString(scanner, "请输入订单号：");
+        orderView.printDetail(orderHandler.getOrder(orderId));
     }
 
     /**
@@ -177,14 +183,11 @@ public class OrderUI extends BaseMenu {
     private void changeStatus() {
         String orderId = InputUtil.getString(scanner, "请输入订单号：");
         OrderStatus[] statuses = OrderStatus.values();
+        String[] options = new String[statuses.length];
         for (int i = 0; i < statuses.length; i++) {
-            System.out.println("【" + (i + 1) + "】" + statuses[i].getLabel());
+            options[i] = statuses[i].getLabel();
         }
-        int choice = InputUtil.getInt(scanner, "请选择新状态：");
-        if (choice < 1 || choice > statuses.length) {
-            throw new InputException("无效的状态编号");
-        }
-        OrderStatus newStatus = statuses[choice - 1];
+        OrderStatus newStatus = statuses[chooseIndex(options, "请选择新状态：")];
         orderHandler.changeStatus(orderId, newStatus);
         System.out.println("订单状态已改为：" + newStatus.getLabel());
     }

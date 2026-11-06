@@ -5,6 +5,7 @@ import practicalpractice5.handler.CategoryHandler;
 import practicalpractice5.utils.input.InputUtil;
 import practicalpractice5.utils.menu.BaseMenu;
 import practicalpractice5.utils.menu.MenuUtil;
+import practicalpractice5.view.CategoryView;
 
 import java.util.Scanner;
 
@@ -32,7 +33,7 @@ public class CategoryUI extends BaseMenu {
     protected void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addCategory();
-            case 2 -> categoryHandler.queryAll();
+            case 2 -> CategoryView.printTable(categoryHandler.findAll(), "暂无数据。");
             default -> System.out.println("无效编号！");
         }
     }

@@ -2,11 +2,12 @@ package practicalpractice8.handler;
 
 import practicalpractice8.entity.Goods;
 import practicalpractice8.utils.exception.BusinessException;
-import practicalpractice8.utils.menu.MenuUtil;
+
+import java.util.Arrays;
 
 /**
  * 管理商品：查找、排序、库存预警和统计。
- * 存储、新增、查看全部、按 ID 删除由父类 BaseHandler 提供。
+ * 存储、新增、取得全部、按 ID 删除由父类 BaseHandler 提供。
  */
 public class GoodsHandler extends BaseHandler<Goods> {
     private static final int LOW_STOCK_THRESHOLD = 20;
@@ -29,7 +30,7 @@ public class GoodsHandler extends BaseHandler<Goods> {
     }
 
     /**
-     * 按名称查找商品
+     * 按名称精确查找商品
      *
      * @param name 商品名称
      * @return 找到返回该商品，找不到返回 null
@@ -58,100 +59,62 @@ public class GoodsHandler extends BaseHandler<Goods> {
     }
 
     /**
-     * 按名称精确查找并打印商品
-     *
-     * @param name 商品名称
-     */
-    public void findGoods(String name) {
-        Goods goods = findByName(name);
-        if (goods == null) {
-            System.out.println("找不到该商品。");
-            return;
-        }
-        printHeader();
-        printItem(goods);
-    }
-
-    /**
-     * 查找并打印价格在区间内的商品（包含两端）
+     * 查找价格在区间内的商品（包含两端）
      *
      * @param minPrice 最低价格
      * @param maxPrice 最高价格
+     * @return 找到的商品，一个都没有时长度为 0
      */
-    public void findGoods(double minPrice, double maxPrice) {
+    public Goods[] findByPriceRange(double minPrice, double maxPrice) {
+        Goods[] result = new Goods[count];
         int found = 0;
         for (int i = 0; i < count; i++) {
             double price = array[i].getPrice();
             if (price >= minPrice && price <= maxPrice) {
-                printFound(array[i], found);
+                result[found] = array[i];
                 found++;
             }
         }
-        if (found == 0) {
-            System.out.println("在该价格区间内未找到商品。");
-        }
+        return Arrays.copyOf(result, found);
     }
 
     /**
-     * 模糊查询：名称包含关键字的商品都会打印出来
+     * 模糊查询：名称包含关键字的商品
      *
      * @param keyword 关键字
+     * @return 找到的商品，一个都没有时长度为 0
      */
-    public void queryByKeyword(String keyword) {
+    public Goods[] findByKeyword(String keyword) {
+        Goods[] result = new Goods[count];
         int found = 0;
         for (int i = 0; i < count; i++) {
             if (array[i].getGoodsName().contains(keyword)) {
-                printFound(array[i], found);
+                result[found] = array[i];
                 found++;
             }
         }
-        if (found == 0) {
-            System.out.println("未找到商品。");
-        }
+        return Arrays.copyOf(result, found);
     }
 
     /**
-     * 统计库存紧张的商品数量
+     * 库存预警：找出库存低于 20 的商品
      *
-     * @return 库存低于 20 的商品个数
+     * @return 库存紧张的商品，一个都没有时长度为 0
      */
-    public int countLowStock() {
-        int lowStockCount = 0;
+    public Goods[] findLowStock() {
+        Goods[] result = new Goods[count];
+        int found = 0;
         for (int i = 0; i < count; i++) {
-            if (isLowStock(array[i])) {
-                lowStockCount++;
+            if (array[i].getStock() < LOW_STOCK_THRESHOLD) {
+                result[found] = array[i];
+                found++;
             }
         }
-        return lowStockCount;
+        return Arrays.copyOf(result, found);
     }
 
     /**
-     * 库存预警：列出库存低于 20 的商品，并显示数量
-     */
-    public void stockAlarm() {
-        if (count == 0) {
-            System.out.println("暂无商品，无法进行库存预警。");
-            return;
-        }
-        int lowStockCount = countLowStock();
-        if (lowStockCount == 0) {
-            System.out.println("所有商品库存充足。");
-            return;
-        }
-        for (int i = 0; i < count; i++) {
-            if (isLowStock(array[i])) {
-                System.out.println("【库存紧张】" + array[i].getGoodsName() + "，剩余库存：" + array[i].getStock());
-            }
-        }
-        System.out.println("共有 " + lowStockCount + " 个商品库存紧张。");
-    }
-
-    private boolean isLowStock(Goods goods) {
-        return goods.getStock() < LOW_STOCK_THRESHOLD;
-    }
-
-    /**
-     * 用冒泡排序按价格排序并打印结果，排序会改变数组里原来的顺序
+     * 用冒泡排序按价格排序，排序会改变数组里原来的顺序
      *
      * @param type 1 为升序，2 为降序
      */
@@ -169,37 +132,30 @@ public class GoodsHandler extends BaseHandler<Goods> {
                 }
             }
         }
-        queryAll();
     }
 
     /**
-     * 统计并打印总库存和平均单价，没有商品时提示暂无数据
+     * @return 所有商品的库存之和
      */
-    public void showStatistics() {
-        if (count == 0) {
-            System.out.println("暂无数据。");
-            return;
-        }
+    public int getTotalStock() {
         int totalStock = 0;
-        double totalPrice = 0;
         for (int i = 0; i < count; i++) {
             totalStock += array[i].getStock();
+        }
+        return totalStock;
+    }
+
+    /**
+     * @return 所有商品的平均单价，没有商品时返回 0
+     */
+    public double getAveragePrice() {
+        if (count == 0) {
+            return 0;
+        }
+        double totalPrice = 0;
+        for (int i = 0; i < count; i++) {
             totalPrice += array[i].getPrice();
         }
-        double averagePrice = totalPrice / count;
-        System.out.printf("总库存：%d，平均单价：%.2f%n", totalStock, averagePrice);
-    }
-
-    @Override
-    protected void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-15s %-10s %-8s %s%n", "商品编号", "商品名称", "单价", "库存", "分类ID");
-        MenuUtil.printLine();
-    }
-
-    @Override
-    protected void printItem(Goods item) {
-        System.out.printf("%-10s %-15s %-10.2f %-8d %s%n",
-                item.getGoodsId(), item.getGoodsName(), item.getPrice(), item.getStock(), item.getCateId());
+        return totalPrice / count;
     }
 }

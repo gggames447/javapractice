@@ -2,7 +2,6 @@ package practicalpractice8.handler;
 
 import practicalpractice8.entity.UserAccount;
 import practicalpractice8.utils.exception.BusinessException;
-import practicalpractice8.utils.menu.MenuUtil;
 
 /**
  * 管理普通用户
@@ -57,7 +56,7 @@ public class UserHandler extends BaseHandler<UserAccount> {
     }
 
     /**
-     * 按用户 ID 查出用户名，用于打印地址、订单
+     * 按用户 ID 查出用户名，显示地址、订单时用
      *
      * @param userId 用户 ID
      * @return 用户名；用户不存在时返回「未知用户」
@@ -65,17 +64,5 @@ public class UserHandler extends BaseHandler<UserAccount> {
     public String getUserNameById(String userId) {
         UserAccount user = findById(userId);
         return (user == null) ? "未知用户" : user.getUserName();
-    }
-
-    @Override
-    protected void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-12s %-14s %s%n", "用户名", "手机号", "用户ID");
-        MenuUtil.printLine();
-    }
-
-    @Override
-    protected void printItem(UserAccount user) {
-        System.out.printf("%-12s %-14s %s%n", user.getUserName(), user.getPhone(), user.getUserId());
     }
 }

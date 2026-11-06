@@ -2,10 +2,11 @@ package practicalpractice5.handler;
 
 import practicalpractice5.category.Category;
 import practicalpractice5.utils.exception.BusinessException;
-import practicalpractice5.utils.menu.MenuUtil;
+
+import java.util.Arrays;
 
 /**
- * 管理商品分类，用数组存储，最多 20 个
+ * 管理商品分类，用数组存储，最多 20 个。只管数据，不打印，显示交给 CategoryView。
  */
 public class CategoryHandler {
     private static final int MAX_SIZE = 20;
@@ -52,27 +53,9 @@ public class CategoryHandler {
     }
 
     /**
-     * 查看全部分类，没有分类时提示暂无数据
+     * @return 全部分类的副本，没有分类时长度为 0
      */
-    public void queryAll() {
-        if (count == 0) {
-            System.out.println("暂无数据。");
-            return;
-        }
-        printHeader();
-        for (int i = 0; i < count; i++) {
-            printCategory(categories[i]);
-        }
-    }
-
-    private void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-20s %s%n", "分类编号", "分类名称", "分类描述");
-        MenuUtil.printLine();
-    }
-
-    private void printCategory(Category category) {
-        System.out.printf("%-10s %-20s %s%n",
-                category.getCateId(), category.getCateName(), category.getCateDesc());
+    public Category[] findAll() {
+        return Arrays.copyOf(categories, count);
     }
 }

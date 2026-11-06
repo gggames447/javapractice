@@ -5,6 +5,7 @@ import practicalpractice7.handler.UserHandler;
 import practicalpractice7.utils.input.InputUtil;
 import practicalpractice7.utils.menu.BaseMenu;
 import practicalpractice7.utils.menu.MenuUtil;
+import practicalpractice7.view.UserView;
 
 import java.util.Scanner;
 
@@ -13,6 +14,7 @@ import java.util.Scanner;
  */
 public class UserUI extends BaseMenu {
     private final UserHandler userHandler;
+    private final UserView userView = new UserView();
 
     /**
      * @param scanner 键盘输入
@@ -32,7 +34,7 @@ public class UserUI extends BaseMenu {
     protected void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addUser();
-            case 2 -> userHandler.queryAll();
+            case 2 -> userView.printTable(userHandler.findAll(), "暂无数据。");
             case 3 -> queryByName();
             default -> System.out.println("无效编号！");
         }
@@ -47,18 +49,14 @@ public class UserUI extends BaseMenu {
         String phone = InputUtil.getString(scanner, "请输入手机号码：");
         String password = InputUtil.getString(scanner, "请输入密码：");
         userHandler.add(new UserAccount(userName, phone, password));
+        System.out.println("用户添加成功！");
     }
 
     /**
-     * 按用户名查找并打印用户信息
+     * 按用户名查找并打印用户信息，不显示密码
      */
     private void queryByName() {
-        String userName = InputUtil.getString(scanner, "请输入要查找的用户名：");
-        UserAccount user = userHandler.findByName(userName);
-        if (user == null) {
-            System.out.println("找不到该用户");
-            return;
-        }
+        UserAccount user = userHandler.getByName(InputUtil.getString(scanner, "请输入要查找的用户名："));
         System.out.println("用户ID：" + user.getUserId());
         System.out.println("用户名：" + user.getUserName());
         System.out.println("手机号：" + user.getPhone());

@@ -2,12 +2,10 @@ package practicalpractice7.entity;
 
 import practicalpractice7.utils.exception.InputException;
 
-import java.util.UUID;
-
 /**
  * 收货地址，通过 userId 关联到所属用户
  */
-public class UserAddressInfo extends BaseEntity{
+public class UserAddressInfo extends BaseEntity {
     private final String userId;
     private String receiver;
     private String telephone;
@@ -81,15 +79,5 @@ public class UserAddressInfo extends BaseEntity{
             throw new InputException("详细地址不能为空");
         }
         this.addressInfo = addressInfo;
-    }
-
-    @Override
-    public String toString() {
-        return "UserAddressInfo{" +
-                ", userId='" + userId + '\'' +
-                ", receiver='" + receiver + '\'' +
-                ", telephone='" + telephone + '\'' +
-                ", addressInfo='" + addressInfo + '\'' +
-                '}';
     }
 }

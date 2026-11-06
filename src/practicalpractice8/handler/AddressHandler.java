@@ -2,7 +2,6 @@ package practicalpractice8.handler;
 
 import practicalpractice8.entity.UserAddressInfo;
 import practicalpractice8.utils.exception.BusinessException;
-import practicalpractice8.utils.menu.MenuUtil;
 
 import java.util.Arrays;
 
@@ -10,14 +9,9 @@ import java.util.Arrays;
  * 管理收货地址
  */
 public class AddressHandler extends BaseHandler<UserAddressInfo> {
-    private final UserHandler userHandler;
 
-    /**
-     * @param userHandler 用户数据，打印地址时用来根据 userId 查出用户名
-     */
-    public AddressHandler(UserHandler userHandler) {
+    public AddressHandler() {
         super(new UserAddressInfo[MAX_SIZE]);
-        this.userHandler = userHandler;
     }
 
     /**
@@ -52,18 +46,5 @@ public class AddressHandler extends BaseHandler<UserAddressInfo> {
             }
         }
         return Arrays.copyOf(result, found);
-    }
-
-    @Override
-    protected void printHeader() {
-        MenuUtil.printLine();
-        System.out.printf("%-10s %-8s %-14s %s%n", "所属用户", "收件人", "电话", "详细地址");
-        MenuUtil.printLine();
-    }
-
-    @Override
-    protected void printItem(UserAddressInfo address) {
-        System.out.printf("%-10s %-8s %-14s %s%n", userHandler.getUserNameById(address.getUserId()),
-                address.getReceiver(), address.getTelephone(), address.getAddressInfo());
     }
 }

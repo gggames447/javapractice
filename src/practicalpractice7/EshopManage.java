@@ -1,8 +1,8 @@
 package practicalpractice7;
 
+import practicalpractice7.controller.MainMenuUI;
 import practicalpractice7.handler.AddressHandler;
 import practicalpractice7.handler.CategoryHandler;
-import practicalpractice7.controller.MainMenuUI;
 import practicalpractice7.handler.GoodsHandler;
 import practicalpractice7.handler.OrderHandler;
 import practicalpractice7.handler.UserHandler;
@@ -29,8 +29,8 @@ public class EshopManage {
             CategoryHandler categoryHandler = new CategoryHandler();
             GoodsHandler goodsHandler = new GoodsHandler();
             UserHandler userHandler = new UserHandler();
-            AddressHandler addressHandler = new AddressHandler(userHandler);
-            OrderHandler orderHandler = new OrderHandler(userHandler, goodsHandler);
+            AddressHandler addressHandler = new AddressHandler();
+            OrderHandler orderHandler = new OrderHandler(goodsHandler);
 
             new MainMenuUI(scanner, currentUser, categoryHandler, goodsHandler,
                     userHandler, addressHandler, orderHandler).show();

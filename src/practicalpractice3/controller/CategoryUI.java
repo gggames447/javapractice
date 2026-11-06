@@ -8,6 +8,7 @@ import practicalpractice3.utils.exception.BusinessException;
 import practicalpractice3.utils.exception.InputException;
 import practicalpractice3.utils.input.InputUtil;
 import practicalpractice3.utils.menu.MenuUtil;
+import practicalpractice3.view.CategoryView;
 
 import java.util.Scanner;
 
@@ -24,7 +25,7 @@ public class CategoryUI {
 
                 switch (choice) {
                     case 1 -> addCategory(scanner, categoryHandler);
-                    case 2 -> categoryHandler.queryAll();
+                    case 2 -> CategoryView.printTable(categoryHandler.findAll(), "暂无数据。");
                     default -> System.out.println("无效编号！");
                 }
             } catch (InputException e) {

@@ -7,6 +7,7 @@ import practicalpractice8.handler.UserHandler;
 import practicalpractice8.utils.input.InputUtil;
 import practicalpractice8.utils.menu.BaseMenu;
 import practicalpractice8.utils.menu.MenuUtil;
+import practicalpractice8.view.AddressView;
 
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ import java.util.Scanner;
 public class AddressUI extends BaseMenu {
     private final AddressHandler addressHandler;
     private final UserHandler userHandler;
+    private final AddressView addressView;
 
     /**
      * @param scanner 键盘输入
@@ -26,6 +28,7 @@ public class AddressUI extends BaseMenu {
         super(scanner);
         this.addressHandler = addressHandler;
         this.userHandler = userHandler;
+        this.addressView = new AddressView(userHandler);
     }
 
     @Override
@@ -37,7 +40,7 @@ public class AddressUI extends BaseMenu {
     protected void handleChoice(int choice) {
         switch (choice) {
             case 1 -> addAddress();
-            case 2 -> addressHandler.queryAll();
+            case 2 -> addressView.printTable(addressHandler.findAll(), "暂无数据。");
             default -> System.out.println("无效编号！");
         }
     }

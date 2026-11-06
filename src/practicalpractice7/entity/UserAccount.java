@@ -2,13 +2,10 @@ package practicalpractice7.entity;
 
 import practicalpractice7.utils.exception.InputException;
 
-import java.util.UUID;
-
 /**
  * 普通用户
  */
 public class UserAccount extends BaseEntity {
-
     private String userName;
     private String phone;
     private String password;

@@ -2,12 +2,13 @@ package practicalpractice6.entity;
 
 import practicalpractice6.enums.OrderStatus;
 import practicalpractice6.utils.exception.InputException;
+import practicalpractice6.utils.exception.BusinessException;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
 
 /**
- * 订单：一个订单包含多个订单项（一对多）
+ * 订单：一个订单包含多个订单项（一对多），并关联下单用户
  */
 public class Order extends BaseEntity {
     private static final int MAX_ITEMS = 10;
@@ -19,18 +20,19 @@ public class Order extends BaseEntity {
     private OrderStatus status = OrderStatus.UNPAID;
 
     /**
-     * 创建一个空订单，状态为待付款，自动生成 UUID 作为订单 ID
+     * 创建一个空订单，状态为待付款
      *
+     * @param orderId 订单号，由 OrderHandler 生成
      * @param userId 下单用户的 ID
      */
-    public Order(String orderId,String userId) {
+    public Order(String orderId, String userId) {
         super(orderId);
         this.userId = userId;
     }
 
     /**
      * 往订单里加一种商品，同时累加总金额。
-     * 库存是否足够由调用方在下单前检查。
+     * 库存是否足够由 OrderHandler 在提交订单时检查。
      *
      * @param goods 购买的商品
      * @param num 购买数量
@@ -44,6 +46,21 @@ public class Order extends BaseEntity {
         items[itemCount] = item;
         itemCount++;
         totalMoney += item.getSubTotal();
+    }
+
+    /**
+     * 判断订单里是否已经有某种商品
+     *
+     * @param goodsId 商品编号
+     * @return 已经有了返回 true
+     */
+    public boolean containsGoods(String goodsId) {
+        for (int i = 0; i < itemCount; i++) {
+            if (items[i].getGoodsId().equals(goodsId)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -84,11 +101,11 @@ public class Order extends BaseEntity {
      * 修改订单状态，只允许按 OrderStatus.canChangeTo 规定的顺序修改
      *
      * @param newStatus 新状态
-     * @throws InputException 不允许从当前状态改为新状态时
+     * @throws BusinessException 不允许从当前状态改为新状态时
      */
     public void setStatus(OrderStatus newStatus) {
         if (!status.canChangeTo(newStatus)) {
-            throw new InputException("订单状态不能从「" + status.getLabel()
+            throw new BusinessException("订单状态不能从「" + status.getLabel()
                     + "」改为「" + newStatus.getLabel() + "」");
         }
         this.status = newStatus;

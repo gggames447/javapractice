@@ -4,8 +4,8 @@ package practicalpractice6.account;
  * 管理员账号，目前账号直接写在 LoginService 里
  */
 public class AdminAccount {
-    private String name;
-    private String password;
+    private final String name;
+    private final String password;
 
     /**
      * 创建一个管理员账号
@@ -26,4 +26,3 @@ public class AdminAccount {
         return password;
     }
 }
-
